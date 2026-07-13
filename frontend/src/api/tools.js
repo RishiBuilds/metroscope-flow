@@ -1,0 +1,10 @@
+import client from './client.js';
+export const predictVisa = (inputs) => client.post('/visa/predict', inputs);
+export const saveVisaResult = (inputs, result) => client.post('/visa/results', { inputs, result });
+export const listVisaResults = () => client.get('/visa/results');
+export const getVisaTimeline = () => client.get('/visa/timeline');
+export const updateVisaTimeline = (userId, phases) => client.patch(`/visa/timeline/${userId}`, { phases });
+export const cultureChat = (payload) => client.post('/culture/chat', payload);
+export const getChecklist = () => client.get('/checklist');
+export const generateChecklist = (payload) => client.post('/checklist/generate', payload);
+export const toggleChecklistItem = (id, itemId, done) => client.patch(`/checklist/${id}`, { itemId, done });
