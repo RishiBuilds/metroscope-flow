@@ -1,0 +1,2 @@
+import { Router } from 'express'; import { protect } from '../middleware/auth.middleware.js'; import * as controller from '../controllers/visa.controller.js';
+const router = Router(); router.use(protect); router.post('/predict', controller.predict); router.post('/results', controller.saveResult); router.get('/results', controller.listResults); router.get('/timeline', controller.getTimeline); router.patch('/timeline/:userId', controller.updateTimeline); export default router;

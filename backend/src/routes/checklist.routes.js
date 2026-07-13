@@ -1,0 +1,1 @@
+import { Router } from 'express'; import { protect } from '../middleware/auth.middleware.js'; import * as controller from '../controllers/checklist.controller.js'; const router = Router(); router.use(protect); router.post('/generate', controller.generate); router.get('/', controller.getActive); router.patch('/:id', controller.toggle); export default router;
