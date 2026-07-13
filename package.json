@@ -1,0 +1,8 @@
+{
+  "name": "metroscope-flow",
+  "private": true,
+  "scripts": {
+    "dev": "node dev.mjs",
+    "build": "npm.cmd run build --prefix frontend"
+  }
+}
