@@ -1,20 +1,64 @@
 import { Globe2 } from './icons.jsx';
 import { Link } from 'react-router';
 
+const PRODUCT_LINKS = [
+  { to: '/compare',        label: 'Compare Cities' },
+  { to: '/visa-predictor', label: 'Visa Predictor' },
+  { to: '/culture-guide',  label: 'Culture Guide' },
+  { to: '/checklist',      label: 'Checklist' },
+];
+
+const ACCOUNT_LINKS = [
+  { to: '/signup',  label: 'Sign Up' },
+  { to: '/login',   label: 'Log In' },
+  { to: '/saved',   label: 'Saved Comparisons' },
+  { to: '/profile', label: 'Profile' },
+];
+
 export default function Footer() {
   return (
-    <footer className="mt-auto border-t border-surface-700/40 bg-surface-950/80">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer className="footer-expanded mt-auto">
+      <div className="footer-grid">
 
-        <div className="flex items-center gap-2 text-surface-600 text-sm">
-          <Globe2 size={16} className="text-brand-500" />
-          <span className="font-semibold gradient-text">MetroScope Flow</span>
+        <div>
+          <Link to="/" className="flex items-center gap-2 mb-3" aria-label="MetroScope Flow home">
+            <Globe2 size={18} className="text-brand-500" />
+            <span className="font-display text-base font-bold gradient-text">MetroScope Flow</span>
+          </Link>
+          <p className="text-sm text-surface-600 leading-relaxed max-w-xs">
+            Know before you move. Compare cities side-by-side across cost of living, safety, healthcare, and quality of life.
+          </p>
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-surface-600">
-          <Link to="/" className="hover:text-surface-400 transition-colors">Home</Link>
-          <Link to="/compare" className="hover:text-surface-400 transition-colors">Compare</Link>
+        <div>
+          <p className="footer-col-title">Product</p>
+          <nav className="footer-links" aria-label="Product links">
+            {PRODUCT_LINKS.map(({ to, label }) => (
+              <Link key={to} to={to}>{label}</Link>
+            ))}
+          </nav>
         </div>
+
+        <div>
+          <p className="footer-col-title">Account</p>
+          <nav className="footer-links" aria-label="Account links">
+            {ACCOUNT_LINKS.map(({ to, label }) => (
+              <Link key={to} to={to}>{label}</Link>
+            ))}
+          </nav>
+        </div>
+
+        <div>
+          <p className="footer-col-title">Data</p>
+          <p className="text-xs text-surface-600 leading-relaxed">
+            2026 educational dataset modeled on global cost-of-living and quality-of-life patterns. NYC&nbsp;=&nbsp;100 baseline. Not financial advice.
+          </p>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <span>© {new Date().getFullYear()} MetroScope Flow. All rights reserved.</span>
+        <span>Educational project · illustrative data</span>
       </div>
     </footer>
   );

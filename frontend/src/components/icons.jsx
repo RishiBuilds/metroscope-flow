@@ -1,24 +1,33 @@
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Add01Icon,
+  AirplaneTakeOff01Icon,
   Alert01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
   ArrowDown01Icon,
   ArrowUp01Icon,
   Award01Icon,
+  BookOpen01Icon,
   Bookmark01Icon,
   BookmarkCheck01Icon,
+  BookmarkPlusIcon,
   BookmarkRemove01Icon,
   Calendar03Icon,
   Cancel01Icon,
   ChartBarLineIcon,
   ChartNoAxesCombinedIcon,
+  ChartRadarIcon,
+  CheckListIcon,
   CheckmarkCircle02Icon,
+  Clock01Icon,
+  Compass01Icon,
+  Database01Icon,
   Delete01Icon,
   EarthIcon,
   Exchange01Icon,
   HeartPulseIcon,
+  InformationCircleIcon,
   Leaf01Icon,
   Loading01Icon,
   Location01Icon,
@@ -26,6 +35,7 @@ import {
   Logout01Icon,
   Menu01Icon,
   RefreshIcon,
+  Route01Icon,
   Search01Icon,
   Shield01Icon,
   SparklesIcon,
@@ -79,3 +89,13 @@ export const Sparkles = createIcon(SparklesIcon);
 export const WalletCards = createIcon(Wallet01Icon);
 export const HeartPulse = createIcon(HeartPulseIcon);
 export const Leaf = createIcon(Leaf01Icon);
+export const Compass = createIcon(Compass01Icon);
+export const ChartRadar = createIcon(ChartRadarIcon);
+export const BookmarkPlus = createIcon(BookmarkPlusIcon);
+export const AirplaneTakeOff = createIcon(AirplaneTakeOff01Icon);
+export const RoutePath = createIcon(Route01Icon);
+export const BookOpen = createIcon(BookOpen01Icon);
+export const CheckListIcon2 = createIcon(CheckListIcon);
+export const Database = createIcon(Database01Icon);
+export const InformationCircle = createIcon(InformationCircleIcon);
+export const Clock = createIcon(Clock01Icon);
