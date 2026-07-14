@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0b1a" />
+      <stop offset="100%" stop-color="#06050e" />
+    </linearGradient>
+
+    <!-- M Path Gradient -->
+    <linearGradient id="mGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00a2ff" />
+      <stop offset="35%" stop-color="#00c6ff" />
+      <stop offset="60%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#ffffff" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- The "M" Path -->
+  <path d="M 130 330 L 130 220 C 130 150, 180 150, 210 200 C 235 250, 277 250, 302 200 C 332 150, 382 150, 382 220 L 382 330" 
+        fill="none" 
+        stroke="url(#mGrad)" 
+        stroke-width="56" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Left Indicator (Blue outer circle, white inner dot) -->
+  <circle cx="130" cy="330" r="38" fill="#0088ff" />
+  <circle cx="130" cy="330" r="16" fill="#ffffff" />
+
+  <!-- Right Indicator (White outer circle, dark inner dot) -->
+  <circle cx="382" cy="330" r="38" fill="#ffffff" />
+  <circle cx="382" cy="330" r="20" fill="#06050e" />
+</svg>
