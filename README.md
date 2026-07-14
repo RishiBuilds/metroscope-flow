@@ -122,22 +122,117 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 metroscope-flow/
 ├── backend/
 │   ├── src/
-│   │   ├── config/          # DB connection, env, cookie settings
-│   │   ├── controllers/     # Auth, city, and comparison handlers
-│   │   ├── data/            # CSV seed data + seed script
-│   │   ├── middleware/      # Auth, rate limiting, error handling
-│   │   ├── models/          # User, City, SavedComparison schemas
-│   │   └── routes/          # REST API route definitions
+│   │   ├── config/                   # DB connection, env vars, cookie settings
+│   │   │   ├── cookie.js
+│   │   │   ├── db.js
+│   │   │   └── env.js
+│   │   ├── controllers/              # Route handlers (thin — delegate to services)
+│   │   │   ├── auth.controller.js
+│   │   │   ├── checklist.controller.js
+│   │   │   ├── city.controller.js
+│   │   │   ├── comparison.controller.js
+│   │   │   ├── culture.controller.js
+│   │   │   └── visa.controller.js
+│   │   ├── data/                     # Seed data and static fallbacks
+│   │   │   ├── checklistTemplates.js
+│   │   │   ├── cities_seed.csv
+│   │   │   ├── cultureFallbacks.js
+│   │   │   └── seed.js
+│   │   ├── middleware/               # Express middleware
+│   │   │   ├── auth.middleware.js
+│   │   │   ├── error.middleware.js
+│   │   │   └── rateLimit.middleware.js
+│   │   ├── models/                   # Mongoose schemas
+│   │   │   ├── Checklist.js
+│   │   │   ├── City.js
+│   │   │   ├── SavedComparison.js
+│   │   │   ├── User.js
+│   │   │   ├── VisaResult.js
+│   │   │   └── VisaTimeline.js
+│   │   ├── repositories/             # Data-access layer
+│   │   │   └── city.repository.js
+│   │   ├── routes/                   # REST API route definitions
+│   │   │   ├── auth.routes.js
+│   │   │   ├── checklist.routes.js
+│   │   │   ├── city.routes.js
+│   │   │   ├── comparison.routes.js
+│   │   │   ├── culture.routes.js
+│   │   │   ├── health.routes.js
+│   │   │   └── visa.routes.js
+│   │   ├── services/                 # Business logic
+│   │   │   ├── auth.service.js
+│   │   │   ├── checklist.service.js
+│   │   │   ├── city.service.js
+│   │   │   ├── comparison.service.js
+│   │   │   ├── culture.service.js
+│   │   │   ├── visa.service.js
+│   │   │   └── visaScoring.js
+│   │   ├── utils/                    # Shared helpers
+│   │   │   ├── AppError.js
+│   │   │   └── pagination.js
+│   │   ├── app.js                    # Express app setup
+│   │   └── index.js                  # Server entry point
 │   └── .env.example
 ├── frontend/
+│   ├── public/
+│   │   └── favicon.svg
 │   ├── src/
-│   │   ├── api/             # Axios client and API modules
-│   │   ├── components/      # UI, charts, city picker, modals
-│   │   ├── context/         # Auth provider
-│   │   └── pages/           # Route-level page components
-│   └── .env.example
-├── dev.mjs                  # Runs backend + frontend concurrently
+│   │   ├── api/                      # Axios client and API modules
+│   │   │   ├── auth.js
+│   │   │   ├── cities.js
+│   │   │   ├── client.js
+│   │   │   ├── comparisons.js
+│   │   │   └── tools.js
+│   │   ├── assets/                   # Hero images (responsive WebP + PNG)
+│   │   ├── components/               # Reusable UI components
+│   │   │   ├── ui/                   #   shadcn-style primitives
+│   │   │   │   ├── badge.jsx
+│   │   │   │   ├── button.jsx
+│   │   │   │   ├── card.jsx
+│   │   │   │   ├── dialog.jsx
+│   │   │   │   ├── input.jsx
+│   │   │   │   └── skeleton.jsx
+│   │   │   ├── CityPicker.jsx
+│   │   │   ├── ComparisonCharts.jsx
+│   │   │   ├── ErrorBoundary.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   ├── Reveal.jsx
+│   │   │   ├── SaveModal.jsx
+│   │   │   ├── ScrollProgress.jsx
+│   │   │   ├── Skeleton.jsx
+│   │   │   ├── icons.jsx
+│   │   │   └── ui.jsx
+│   │   ├── context/                  # React context providers
+│   │   │   └── AuthContext.jsx
+│   │   ├── lib/                      # Utility functions and motion helpers
+│   │   │   ├── motion.js
+│   │   │   └── utils.js
+│   │   ├── pages/                    # Route-level page components
+│   │   │   ├── ChecklistPage.jsx
+│   │   │   ├── ComparePage.jsx
+│   │   │   ├── CultureGuidePage.jsx
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── NotFoundPage.jsx
+│   │   │   ├── ProfilePage.jsx
+│   │   │   ├── SavedPage.jsx
+│   │   │   ├── SignupPage.jsx
+│   │   │   ├── VisaPredictorPage.jsx
+│   │   │   └── VisaTimelinePage.jsx
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .env.example
+│   ├── components.json               # shadcn/ui configuration
+│   ├── tailwind.config.js
+│   └── vite.config.js
+├── docs/
+│   └── hero.png                      # README banner image
+├── dev.mjs                           # Runs backend + frontend concurrently
 ├── ARCHITECTURE.md
+├── ARCHITECTURE_NOTES.md
 └── README.md
 ```
 
@@ -153,6 +248,11 @@ metroscope-flow/
 | `/signup` | Create account | No |
 | `/saved` | Saved comparisons | Yes |
 | `/profile` | User profile | Yes |
+| `/visa-predictor` | Visa eligibility predictor | Yes |
+| `/visa-timeline` | Visa relocation timeline | Yes |
+| `/culture-guide` | Cultural relocation guide | Yes |
+| `/checklist` | Relocation checklist | Yes |
+| `*` | 404 Not Found | No |
 
 ---
 
