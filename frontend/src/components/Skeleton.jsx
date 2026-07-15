@@ -1,3 +1,5 @@
+import { Skeleton as NeoSkeleton } from './ui/skeleton.jsx';
+
 function Skeleton({ className = '', style }) {
   return (
     <NeoSkeleton
@@ -56,4 +58,3 @@ Skeleton.CompCard = function SkeletonCompCard() {
 };
 
 export default Skeleton;
-import { Skeleton as NeoSkeleton } from './ui/skeleton.jsx';

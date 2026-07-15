@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -21,19 +22,34 @@ const tooltipStyle = {
 
 const axisStyle = { fill: 'var(--chart-text)', fontSize: 12 };
 const valueLabelStyle = { fontSize: 11, fill: 'var(--chart-text)' };
+const gridStroke = 'oklch(0.26 0.04 260 / 0.4)';
+const legendStyle = { fontSize: 12, color: 'oklch(0.75 0.03 260)' };
+
+const defaultMargin = { top: 28, right: 16, left: 0, bottom: 0 };
 
 export function CostOfLivingChart({ cities }) {
-  const data = cities.map((c) => ({ name: c.city, value: c.food_cost_index + c.transport_cost_index }));
-  const best = Math.min(...data.map((item) => item.value));
+  const data = useMemo(
+    () => cities.map((c) => ({ name: c.city, value: c.food_cost_index + c.transport_cost_index })),
+    [cities],
+  );
+  const best = useMemo(() => Math.min(...data.map((item) => item.value)), [data]);
+
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ top: 28, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.26 0.04 260 / 0.4)" />
+      <BarChart data={data} margin={defaultMargin}>
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
         <XAxis dataKey="name" tick={axisStyle} />
         <YAxis tick={axisStyle} />
         <Tooltip contentStyle={tooltipStyle} />
         <Bar dataKey="value" radius={[4, 4, 0, 0]} name="Cost Index">
-          {data.map((item, i) => <Cell key={i} fill={item.value === best ? 'oklch(0.70 0.17 145)' : CITY_COLORS[i % CITY_COLORS.length]} stroke={item.value === best ? 'oklch(0.88 0.12 145)' : 'transparent'} strokeWidth={2} />)}
+          {data.map((item, i) => (
+            <Cell
+              key={item.name}
+              fill={item.value === best ? 'oklch(0.70 0.17 145)' : CITY_COLORS[i % CITY_COLORS.length]}
+              stroke={item.value === best ? 'oklch(0.88 0.12 145)' : 'transparent'}
+              strokeWidth={2}
+            />
+          ))}
           <LabelList dataKey="value" position="top" offset={8} className="chart-value-label" style={valueLabelStyle} />
         </Bar>
       </BarChart>
@@ -42,24 +58,27 @@ export function CostOfLivingChart({ cities }) {
 }
 
 export function AffordabilityChart({ cities }) {
-  const data = [
-    { metric: 'Avg Rent (USD)',     key: 'avg_monthly_rent_usd' },
-    { metric: 'Internet (USD/mo)',  key: 'internet_cost_usd' },
-    { metric: 'Avg Salary (USD)',   key: 'avg_salary_usd' },
-  ].map(({ metric, key }) => {
-    const row = { metric };
-    cities.forEach((c) => { row[c.city] = c[key]; });
-    return row;
-  });
+  const data = useMemo(() => {
+    const metrics = [
+      { metric: 'Avg Rent (USD)',     key: 'avg_monthly_rent_usd' },
+      { metric: 'Internet (USD/mo)',  key: 'internet_cost_usd' },
+      { metric: 'Avg Salary (USD)',   key: 'avg_salary_usd' },
+    ];
+    return metrics.map(({ metric, key }) => {
+      const row = { metric };
+      cities.forEach((c) => { row[c.city] = c[key]; });
+      return row;
+    });
+  }, [cities]);
 
   return (
     <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={data} margin={{ top: 28, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.26 0.04 260 / 0.4)" />
+      <BarChart data={data} margin={defaultMargin}>
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
         <XAxis dataKey="metric" tick={{ ...axisStyle, fontSize: 11 }} />
         <YAxis tick={axisStyle} tickFormatter={(v) => `$${v >= 1000 ? (v/1000).toFixed(1)+'k' : v}`} />
         <Tooltip contentStyle={tooltipStyle} formatter={(v) => `$${v.toLocaleString()}`} />
-        <Legend wrapperStyle={{ fontSize: 12, color: 'oklch(0.75 0.03 260)' }} />
+        <Legend wrapperStyle={legendStyle} />
         {cities.map((c, i) => (
           <Bar key={c._id} dataKey={c.city} fill={CITY_COLORS[i % CITY_COLORS.length]} radius={[3, 3, 0, 0]}>
             <LabelList dataKey={c.city} position="top" offset={8} className="chart-value-label" style={{ ...valueLabelStyle, fontSize: 10 }}
@@ -72,23 +91,26 @@ export function AffordabilityChart({ cities }) {
 }
 
 export function FoodTransportChart({ cities }) {
-  const data = [
-    { metric: 'Food Index',      key: 'food_cost_index' },
-    { metric: 'Transport Index', key: 'transport_cost_index' },
-  ].map(({ metric, key }) => {
-    const row = { metric };
-    cities.forEach((c) => { row[c.city] = c[key]; });
-    return row;
-  });
+  const data = useMemo(() => {
+    const metrics = [
+      { metric: 'Food Index',      key: 'food_cost_index' },
+      { metric: 'Transport Index', key: 'transport_cost_index' },
+    ];
+    return metrics.map(({ metric, key }) => {
+      const row = { metric };
+      cities.forEach((c) => { row[c.city] = c[key]; });
+      return row;
+    });
+  }, [cities]);
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ top: 28, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.26 0.04 260 / 0.4)" />
+      <BarChart data={data} margin={defaultMargin}>
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
         <XAxis dataKey="metric" tick={axisStyle} />
         <YAxis tick={axisStyle} />
         <Tooltip contentStyle={tooltipStyle} />
-        <Legend wrapperStyle={{ fontSize: 12, color: 'oklch(0.75 0.03 260)' }} />
+        <Legend wrapperStyle={legendStyle} />
         {cities.map((c, i) => (
           <Bar key={c._id} dataKey={c.city} fill={CITY_COLORS[i % CITY_COLORS.length]} radius={[3, 3, 0, 0]}>
             <LabelList dataKey={c.city} position="top" offset={8} className="chart-value-label" style={{ ...valueLabelStyle, fontSize: 10 }} />
@@ -100,21 +122,23 @@ export function FoodTransportChart({ cities }) {
 }
 
 export function QualityRadarChart({ cities }) {
-  const metrics = ['quality_of_life_score', 'healthcare_score', 'safety_score', 'cleanliness', 'affordability'];
-  const labels  = ['Quality of Life', 'Healthcare', 'Safety', 'Cleanliness', 'Affordability'];
+  const data = useMemo(() => {
+    const metrics = ['quality_of_life_score', 'healthcare_score', 'safety_score', 'cleanliness', 'affordability'];
+    const labels  = ['Quality of Life', 'Healthcare', 'Safety', 'Cleanliness', 'Affordability'];
 
-  const data = metrics.map((key, idx) => {
-    const row = { metric: labels[idx] };
-    cities.forEach((c) => {
-      const values = {
-        quality_of_life_score: Math.min(100, Number(c.quality_of_life_score) || 0),
-        cleanliness: Math.max(0, 100 - (Number(c.pollution_score) || 0)),
-        affordability: Math.max(0, 100 - Math.min(100, (Number(c.food_cost_index) + Number(c.transport_cost_index)) / 2)),
-      };
-      row[c.city] = values[key] ?? c[key];
+    return metrics.map((key, idx) => {
+      const row = { metric: labels[idx] };
+      cities.forEach((c) => {
+        const values = {
+          quality_of_life_score: Math.min(100, Number(c.quality_of_life_score) || 0),
+          cleanliness: Math.max(0, 100 - (Number(c.pollution_score) || 0)),
+          affordability: Math.max(0, 100 - Math.min(100, (Number(c.food_cost_index) + Number(c.transport_cost_index)) / 2)),
+        };
+        row[c.city] = values[key] ?? c[key];
+      });
+      return row;
     });
-    return row;
-  });
+  }, [cities]);
 
   return (
     <ResponsiveContainer width="100%" height={340}>
@@ -123,7 +147,7 @@ export function QualityRadarChart({ cities }) {
         <PolarAngleAxis dataKey="metric" tick={{ ...axisStyle, fontSize: 11 }} />
         <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ ...axisStyle, fontSize: 10 }} axisLine={false} />
         <Tooltip contentStyle={tooltipStyle} />
-        <Legend wrapperStyle={{ fontSize: 12, color: 'oklch(0.75 0.03 260)' }} />
+        <Legend wrapperStyle={legendStyle} />
         {cities.map((c, i) => (
           <Radar
             key={c._id}
@@ -141,16 +165,19 @@ export function QualityRadarChart({ cities }) {
 }
 
 export function PollutionChart({ cities }) {
-  const data = cities.map((c) => ({
-    name: c.city,
-    pollution: c.pollution_score,
-    cleanliness: 100 - c.pollution_score,
-  }));
+  const data = useMemo(
+    () => cities.map((c) => ({
+      name: c.city,
+      pollution: c.pollution_score,
+      cleanliness: 100 - c.pollution_score,
+    })),
+    [cities],
+  );
 
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={data} margin={{ top: 28, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.26 0.04 260 / 0.4)" />
+      <BarChart data={data} margin={defaultMargin}>
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
         <XAxis dataKey="name" tick={axisStyle} />
         <YAxis domain={[0, 100]} tick={axisStyle} />
         <Tooltip
@@ -161,9 +188,9 @@ export function PollutionChart({ cities }) {
           ]}
         />
         <Bar dataKey="pollution" name="Pollution Score" radius={[4, 4, 0, 0]}>
-          {data.map((d, i) => (
+          {data.map((d) => (
             <Cell
-              key={i}
+              key={d.name}
               fill={`oklch(${0.65 - d.pollution / 250} ${0.18 + d.pollution / 500} ${d.pollution > 50 ? 25 : 145})`}
             />
           ))}
@@ -173,7 +200,6 @@ export function PollutionChart({ cities }) {
             offset={8}
             className="chart-value-label"
             style={valueLabelStyle}
-            formatter={(v) => v}
           />
         </Bar>
       </BarChart>

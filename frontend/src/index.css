@@ -193,7 +193,8 @@ body {
 .city-picker-search { width:100%; height:46px; padding:.65rem 2.7rem .65rem 2.6rem; background:oklch(.12 .03 260); border-bottom:1px solid oklch(.34 .04 260 / .7); color:oklch(.92 .02 260); }
 .city-picker-search::placeholder { color:oklch(.5 .03 260); }
 .city-picker-option { width:100%; display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.7rem 1rem; text-align:left; font-size:.875rem; color:oklch(.85 .02 260); }
-.city-picker-option:hover { background:oklch(.27 .06 260 / .55); }
+.city-picker-option:hover, .city-picker-option-highlighted { background:oklch(.27 .06 260 / .55); }
+.city-picker-option:focus-visible { outline:2px solid oklch(.55 .24 260 / .4); outline-offset:-2px; }
 .city-picker-add { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .7rem; color:oklch(.67 .16 260); font-size:.78rem; font-weight:600; border-radius:999px; }
 .city-picker-add:hover { background:oklch(.3 .06 260 / .55); color:oklch(.8 .16 260); }
 .city-picker-extra-row { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:.8rem; margin-top:.8rem; }

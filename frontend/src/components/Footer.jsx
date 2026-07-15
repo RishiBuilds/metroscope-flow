@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Globe2 } from './icons.jsx';
 import { Link } from 'react-router';
 
@@ -15,7 +16,22 @@ const ACCOUNT_LINKS = [
   { to: '/profile', label: 'Profile' },
 ];
 
-export default function Footer() {
+function FooterLinkColumn({ title, links, ariaLabel }) {
+  return (
+    <div>
+      <p className="footer-col-title">{title}</p>
+      <nav className="footer-links" aria-label={ariaLabel}>
+        {links.map(({ to, label }) => (
+          <Link key={to} to={to}>{label}</Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+function Footer() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="footer-expanded mt-auto">
       <div className="footer-grid">
@@ -30,36 +46,23 @@ export default function Footer() {
           </p>
         </div>
 
-        <div>
-          <p className="footer-col-title">Product</p>
-          <nav className="footer-links" aria-label="Product links">
-            {PRODUCT_LINKS.map(({ to, label }) => (
-              <Link key={to} to={to}>{label}</Link>
-            ))}
-          </nav>
-        </div>
-
-        <div>
-          <p className="footer-col-title">Account</p>
-          <nav className="footer-links" aria-label="Account links">
-            {ACCOUNT_LINKS.map(({ to, label }) => (
-              <Link key={to} to={to}>{label}</Link>
-            ))}
-          </nav>
-        </div>
+        <FooterLinkColumn title="Product" links={PRODUCT_LINKS} ariaLabel="Product links" />
+        <FooterLinkColumn title="Account" links={ACCOUNT_LINKS} ariaLabel="Account links" />
 
         <div>
           <p className="footer-col-title">Data</p>
           <p className="text-xs text-surface-600 leading-relaxed">
-            2026 educational dataset modeled on global cost-of-living and quality-of-life patterns. NYC&nbsp;=&nbsp;100 baseline. Not financial advice.
+            {year} educational dataset modeled on global cost-of-living and quality-of-life patterns. NYC&nbsp;=&nbsp;100 baseline. Not financial advice.
           </p>
         </div>
       </div>
 
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} MetroScope Flow. All rights reserved.</span>
+        <span>© {year} MetroScope Flow. All rights reserved.</span>
         <span>Educational project · illustrative data</span>
       </div>
     </footer>
   );
 }
+
+export default memo(Footer);
