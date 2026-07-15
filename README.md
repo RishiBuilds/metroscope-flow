@@ -1,6 +1,6 @@
 # MetroScope Flow — Know Before You Move
 
-![MetroScope Flow Banner](./docs/hero.png?v=2)
+![MetroScope Flow Banner](./docs/hero.png)
 
 **Know before you move.** Compare global cities side-by-side across cost of living, safety, healthcare, and quality of life — then save your findings to revisit later.
 
@@ -12,10 +12,10 @@ MetroScope Flow is a full-stack web app for researching relocation and lifestyle
 
 The dataset covers **500 cities** across six continents, modeled on 2026 cost-of-living and quality-of-life patterns. All index scores use **New York City as the 100 baseline**.
 
-| | |
-|---|---|
-| **Frontend** | [http://localhost:3000](http://localhost:3000) |
-| **API** | [http://127.0.0.1:5000](http://127.0.0.1:5000) |
+|                |                                                                                          |
+| -------------- | ---------------------------------------------------------------------------------------- |
+| **Frontend**   | [http://localhost:3000](http://localhost:3000)                                           |
+| **API**        | [http://127.0.0.1:5000](http://127.0.0.1:5000)                                           |
 | **Repository** | [github.com/RishiBuilds/metroscope-flow](https://github.com/RishiBuilds/metroscope-flow) |
 
 ---
@@ -36,12 +36,12 @@ The dataset covers **500 cities** across six continents, modeled on 2026 cost-of
 
 ## Tech Stack
 
-| Layer | Technologies |
-|---|---|
-| **Frontend** | React 19, Vite 8, Tailwind CSS 4, React Router 8, Recharts 3, Axios, Lucide Icons |
-| **Backend** | Node.js 22+, Express 5, Mongoose 9, JWT (httpOnly cookies), Helmet, express-rate-limit |
-| **Database** | MongoDB |
-| **Tooling** | Concurrent dev runner (`dev.mjs`), CSV seed pipeline |
+| Layer        | Technologies                                                                           |
+| ------------ | -------------------------------------------------------------------------------------- |
+| **Frontend** | React 19, Vite 8, Tailwind CSS 4, React Router 8, Recharts 3, Axios, Lucide Icons      |
+| **Backend**  | Node.js 22+, Express 5, Mongoose 9, JWT (httpOnly cookies), Helmet, express-rate-limit |
+| **Database** | MongoDB                                                                                |
+| **Tooling**  | Concurrent dev runner (`dev.mjs`), CSV seed pipeline                                   |
 
 For deeper design notes, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
@@ -240,19 +240,19 @@ metroscope-flow/
 
 ## Application Routes
 
-| Path | Page | Auth required |
-|---|---|---|
-| `/` | Home | No |
-| `/compare` | City comparison | No |
-| `/login` | Log in | No |
-| `/signup` | Create account | No |
-| `/saved` | Saved comparisons | Yes |
-| `/profile` | User profile | Yes |
-| `/visa-predictor` | Visa eligibility predictor | Yes |
-| `/visa-timeline` | Visa relocation timeline | Yes |
-| `/culture-guide` | Cultural relocation guide | Yes |
-| `/checklist` | Relocation checklist | Yes |
-| `*` | 404 Not Found | No |
+| Path              | Page                       | Auth required |
+| ----------------- | -------------------------- | ------------- |
+| `/`               | Home                       | No            |
+| `/compare`        | City comparison            | No            |
+| `/login`          | Log in                     | No            |
+| `/signup`         | Create account             | No            |
+| `/saved`          | Saved comparisons          | Yes           |
+| `/profile`        | User profile               | Yes           |
+| `/visa-predictor` | Visa eligibility predictor | Yes           |
+| `/visa-timeline`  | Visa relocation timeline   | Yes           |
+| `/culture-guide`  | Cultural relocation guide  | Yes           |
+| `/checklist`      | Relocation checklist       | Yes           |
+| `*`               | 404 Not Found              | No            |
 
 ---
 
@@ -260,18 +260,18 @@ metroscope-flow/
 
 Each city record includes the following fields:
 
-| Metric | Field | Notes |
-|---|---|---|
-| Monthly rent | `avg_monthly_rent_usd` | USD per month |
-| Internet cost | `internet_cost_usd` | USD per month |
-| Average salary | `avg_salary_usd` | USD per year |
-| Food cost index | `food_cost_index` | NYC = 100; lower is cheaper |
-| Transport index | `transport_cost_index` | NYC = 100; lower is cheaper |
-| Quality of life | `quality_of_life_score` | 0–100; higher is better |
-| Healthcare | `healthcare_score` | 0–100; higher is better |
-| Safety | `safety_score` | 0–100; higher is better |
-| Pollution | `pollution_score` | 0–100; lower is better |
-| Cost of living | `cost_of_living_index` | NYC = 100; lower is cheaper |
+| Metric          | Field                   | Notes                       |
+| --------------- | ----------------------- | --------------------------- |
+| Monthly rent    | `avg_monthly_rent_usd`  | USD per month               |
+| Internet cost   | `internet_cost_usd`     | USD per month               |
+| Average salary  | `avg_salary_usd`        | USD per year                |
+| Food cost index | `food_cost_index`       | NYC = 100; lower is cheaper |
+| Transport index | `transport_cost_index`  | NYC = 100; lower is cheaper |
+| Quality of life | `quality_of_life_score` | 0–100; higher is better     |
+| Healthcare      | `healthcare_score`      | 0–100; higher is better     |
+| Safety          | `safety_score`          | 0–100; higher is better     |
+| Pollution       | `pollution_score`       | 0–100; lower is better      |
+| Cost of living  | `cost_of_living_index`  | NYC = 100; lower is cheaper |
 
 ---
 
@@ -281,21 +281,21 @@ Base URL: `http://127.0.0.1:5000`
 
 All successful responses use `{ data: … }`. Errors return `{ error: { message, code } }`.
 
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| `GET` | `/api/health` | No | Health check |
-| `GET` | `/api/cities` | No | List all cities (`id`, `city`, `country`) |
-| `GET` | `/api/cities/search?q=` | No | Search cities by name or country |
-| `GET` | `/api/cities/compare?ids=` | No | Full details for 2–10 cities (comma-separated IDs) |
-| `GET` | `/api/cities/:id` | No | Full details for a single city |
-| `POST` | `/api/auth/signup` | No | Create a user account |
-| `POST` | `/api/auth/login` | No | Log in and receive a session cookie |
-| `POST` | `/api/auth/logout` | No | Clear the session cookie |
-| `GET` | `/api/auth/me` | Yes | Get the authenticated user |
-| `POST` | `/api/comparisons` | Yes | Save a comparison |
-| `GET` | `/api/comparisons` | Yes | List saved comparisons |
-| `GET` | `/api/comparisons/:id` | Yes | Get a saved comparison with full city data |
-| `DELETE` | `/api/comparisons/:id` | Yes | Delete a saved comparison |
+| Method   | Path                       | Auth | Description                                        |
+| -------- | -------------------------- | ---- | -------------------------------------------------- |
+| `GET`    | `/api/health`              | No   | Health check                                       |
+| `GET`    | `/api/cities`              | No   | List all cities (`id`, `city`, `country`)          |
+| `GET`    | `/api/cities/search?q=`    | No   | Search cities by name or country                   |
+| `GET`    | `/api/cities/compare?ids=` | No   | Full details for 2–10 cities (comma-separated IDs) |
+| `GET`    | `/api/cities/:id`          | No   | Full details for a single city                     |
+| `POST`   | `/api/auth/signup`         | No   | Create a user account                              |
+| `POST`   | `/api/auth/login`          | No   | Log in and receive a session cookie                |
+| `POST`   | `/api/auth/logout`         | No   | Clear the session cookie                           |
+| `GET`    | `/api/auth/me`             | Yes  | Get the authenticated user                         |
+| `POST`   | `/api/comparisons`         | Yes  | Save a comparison                                  |
+| `GET`    | `/api/comparisons`         | Yes  | List saved comparisons                             |
+| `GET`    | `/api/comparisons/:id`     | Yes  | Get a saved comparison with full city data         |
+| `DELETE` | `/api/comparisons/:id`     | Yes  | Delete a saved comparison                          |
 
 ### Example requests
 
@@ -313,16 +313,16 @@ curl "http://127.0.0.1:5000/api/cities/compare?ids=ID1,ID2"
 
 ### Available scripts
 
-| Command | Location | Description |
-|---|---|---|
-| `npm run dev` | root | Start backend + frontend together |
-| `npm run dev` | `backend/` | Start API with `--watch` |
-| `npm run start` | `backend/` | Start API (production) |
-| `npm run seed` | `backend/` | Load or update city data from CSV |
-| `npm run dev` | `frontend/` | Start Vite dev server |
-| `npm run build` | `frontend/` | Production build |
-| `npm run preview` | `frontend/` | Preview production build |
-| `npm run build` | root | Build frontend for deployment |
+| Command           | Location    | Description                       |
+| ----------------- | ----------- | --------------------------------- |
+| `npm run dev`     | root        | Start backend + frontend together |
+| `npm run dev`     | `backend/`  | Start API with `--watch`          |
+| `npm run start`   | `backend/`  | Start API (production)            |
+| `npm run seed`    | `backend/`  | Load or update city data from CSV |
+| `npm run dev`     | `frontend/` | Start Vite dev server             |
+| `npm run build`   | `frontend/` | Production build                  |
+| `npm run preview` | `frontend/` | Preview production build          |
+| `npm run build`   | root        | Build frontend for deployment     |
 
 ### Dev proxy
 
@@ -355,13 +355,13 @@ Ensure `CLIENT_URL` in `backend/.env` matches your deployed frontend URL for COR
 
 ## Troubleshooting
 
-| Issue | Fix |
-|---|---|
-| `Missing required environment variable: JWT_SECRET` | Copy `backend/.env.example` to `backend/.env` and set `JWT_SECRET` |
-| `MongoServerError: connect ECONNREFUSED` | Start MongoDB locally or update `MONGO_URI` to your Atlas connection string |
-| Frontend loads but API calls fail | Confirm the backend is running on port 5000 and `CLIENT_URL` matches `http://localhost:3000` |
-| Empty city search results | Run `npm run seed` in the `backend/` directory |
-| Port 3000 already in use | Stop the conflicting process or change the port in `frontend/vite.config.js` |
+| Issue                                               | Fix                                                                                          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `Missing required environment variable: JWT_SECRET` | Copy `backend/.env.example` to `backend/.env` and set `JWT_SECRET`                           |
+| `MongoServerError: connect ECONNREFUSED`            | Start MongoDB locally or update `MONGO_URI` to your Atlas connection string                  |
+| Frontend loads but API calls fail                   | Confirm the backend is running on port 5000 and `CLIENT_URL` matches `http://localhost:3000` |
+| Empty city search results                           | Run `npm run seed` in the `backend/` directory                                               |
+| Port 3000 already in use                            | Stop the conflicting process or change the port in `frontend/vite.config.js`                 |
 
 ---
 
