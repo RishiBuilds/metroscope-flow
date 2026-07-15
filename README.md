@@ -1,6 +1,6 @@
 # MetroScope Flow — Know Before You Move
 
-![MetroScope Flow Banner](./docs/hero.png)
+![MetroScope Flow Banner](./docs/hero.png?v=2)
 
 **Know before you move.** Compare global cities side-by-side across cost of living, safety, healthcare, and quality of life — then save your findings to revisit later.
 
