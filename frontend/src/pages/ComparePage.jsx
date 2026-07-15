@@ -295,12 +295,11 @@ export default function ComparePage() {
     compareCities(ids)
       .then((res) => {
         const cities = res.data.data ?? [];
-        setCityData(normalizeCities(cities));
         setSelected(cities.map(({ _id, city, country }) => ({ _id, city, country })));
       })
       .catch(() => setError('Could not load comparison data. Please try again.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     if (selected.length < 2) { setCityData([]); return; }

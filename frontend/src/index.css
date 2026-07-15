@@ -3,7 +3,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -100,12 +100,7 @@ body {
   border-radius: var(--radius-sm);
 }
 
-.gradient-text {
-  background: linear-gradient(130deg, oklch(0.78 0.18 260) 0%, oklch(0.75 0.20 70) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+
 
 .glass {
   background: oklch(0.18 0.04 260 / 0.65);
@@ -317,14 +312,6 @@ body {
 }
 
 @media (min-width: 768px) { .desktop-menu-trigger { display:none !important; } }
-body {
-  font-family: 'Geist Variable', system-ui, sans-serif;
-  background:
-    radial-gradient(circle at 10% -10%, oklch(0.28 0.09 260 / 0.28), transparent 34rem),
-    var(--color-surface-950);
-}
-
-h1, h2, h3, h4 { letter-spacing: -0.025em; }
 
 .glass, .card {
   box-shadow: 0 12px 30px oklch(0.04 0.02 260 / 0.16);
@@ -367,16 +354,16 @@ h1, h2, h3, h4 { letter-spacing: -0.025em; }
 body, .btn-primary, .btn-ghost, .btn-danger, .input-base { font-family: var(--font-body); font-weight: 500; letter-spacing:0; }
 h1, h2, h3, h4, .font-display, .nav-brand { font-family: var(--font-display); font-weight: 800; }
 h2, h3 { letter-spacing:-.01em; }
-body { font-size: 16px; line-height: 1.6; }
-.hero-shell picture img { object-position:48% 42% !important; transform:scale(1.03); transform-origin:center; }
+
+.hero-shell picture img { object-position:50% 35% !important; transform:scale(1.05); transform-origin:center; }
 .hero-title { font-family:var(--font-display); font-size:clamp(3.75rem, 5.5vw, 6.25rem); font-weight:800; letter-spacing:-.03em; line-height:.91; }
 .hero-title .hero-title-lead { display:block; color:#fff; }
 .hero-title > span:not(.hero-title-lead) { display:block; }
 .hero-subtitle { font-family:var(--font-display); font-weight:700; letter-spacing:-.01em; }
-.hero-title span { color:var(--accent-bright); }
+.hero-title span { color:#fff; }
 .hero-title::after { content:''; display:block; width:0; height:2px; margin:.35em auto 0; background:linear-gradient(90deg,transparent,var(--accent-bright),transparent); animation:heroLine .8s .4s ease-out forwards; }
 .hero-shell::after { content:''; position:absolute; inset:auto 0 0; height:24%; background:linear-gradient(transparent,var(--background)); z-index:-5; pointer-events:none; }
-.hero-overlay { background:linear-gradient(180deg,rgba(4,8,20,.32),rgba(4,8,20,.08) 45%,rgba(4,8,20,.68)),linear-gradient(90deg,rgba(4,8,20,.36),transparent 70%); }
+.hero-overlay { background:linear-gradient(180deg,rgba(2,6,24,.52),rgba(2,6,24,.15) 42%,rgba(2,6,24,.72)),linear-gradient(90deg,rgba(2,6,24,.38),transparent 65%); }
 .hero-grain { opacity:.16; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E"); mix-blend-mode:soft-light; }
 .hero-cta { background:var(--accent) !important; box-shadow:inset 0 1px 0 rgba(255,255,255,.35),var(--shadow) !important; }
 .hero-secondary { display:inline-flex; min-height:44px; align-items:center; border:2px solid rgba(255,255,255,.82); color:white; font-weight:600; text-decoration:none; transition:background .2s ease,color .2s ease,transform .2s ease; }
@@ -405,8 +392,6 @@ body { font-size: 16px; line-height: 1.6; }
 @media (prefers-reduced-motion:reduce) { .hero-title::after { animation:none; width:9rem; }.scroll-progress span { transition:none; } }
 
 :root { --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); }
-body { font-family: var(--font-body); }
-h1, h2, h3, h4 { font-family: var(--font-display); }
 .gradient-text { background: linear-gradient(130deg, oklch(0.62 0.22 260), oklch(0.68 0.16 200)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
 .site-nav { transition: background .36s var(--ease-out-expo), backdrop-filter .36s var(--ease-out-expo), border-color .36s var(--ease-out-expo), box-shadow .36s var(--ease-out-expo), color .36s var(--ease-out-expo); }
 .site-nav-home:not(.site-nav-scrolled) .btn-ghost { text-shadow: 0 1px 12px rgb(0 0 0 / .6); }
