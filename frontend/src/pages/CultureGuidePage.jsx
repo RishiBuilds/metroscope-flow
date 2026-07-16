@@ -104,6 +104,8 @@ export default function CultureGuidePage() {
           className="input-base max-w-56"
           value={country}
           onChange={(e) => {
+            clearInterval(timer.current);
+            setBusy(false);
             setCountry(e.target.value);
             setMessages([]);
           }}

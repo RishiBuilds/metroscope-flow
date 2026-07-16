@@ -40,7 +40,7 @@ export default function LoginPage() {
       await login({ email: form.email, password: form.password });
       navigate(from, { replace: true });
     } catch (err) {
-      setApiError(err.response?.data?.error?.message || 'Login failed. Please try again.');
+      setApiError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }

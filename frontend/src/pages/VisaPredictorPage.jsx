@@ -303,7 +303,7 @@ export default function VisaPredictorPage() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Education">
                   <select className="input-base" value={form.education_level} onChange={(e) => patch('education_level', e.target.value)}>
-                    {['phd','masters','bachelors','diploma','high_school'].map((v) => <option key={v}>{v.replace('_', ' ')}</option>)}
+                    {['phd','masters','bachelors','diploma','high_school'].map((v) => <option key={v} value={v}>{v.replace('_', ' ')}</option>)}
                   </select>
                 </Field>
                 <Field label="Work experience (years)">

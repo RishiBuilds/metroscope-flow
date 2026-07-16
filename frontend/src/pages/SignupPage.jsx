@@ -17,7 +17,7 @@ export default function SignupPage() {
     const p = form.password;
     if (!p) return 0;
     let score = 0;
-    if (p.length >= 8)  score++;
+    if (p.length >= 8) score++;
     if (/[A-Z]/.test(p)) score++;
     if (/[0-9]/.test(p)) score++;
     if (/[^A-Za-z0-9]/.test(p)) score++;
@@ -56,7 +56,7 @@ export default function SignupPage() {
       await login({ email: form.email, password: form.password });
       navigate('/compare', { replace: true });
     } catch (err) {
-      setApiError(err.response?.data?.error?.message || 'Signup failed. Please try again.');
+      setApiError(err.message || 'Signup failed. Please try again.');
     } finally {
       setLoading(false);
     }

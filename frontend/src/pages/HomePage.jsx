@@ -31,6 +31,7 @@ const HOW_STEPS = [
 
 const FEATURES = [
   { icon: BarChart3,       title: 'City Comparison',       desc: 'Compare 2–4 cities across 9 key metrics with winner highlights.',          to: '/compare',        protected: false },
+  { icon: Compass,         title: 'Find Your City Quiz',   desc: 'Answer 5 quick questions to discover your best city matches.',             to: '/discover',       protected: false },
   { icon: AirplaneTakeOff, title: 'Visa Predictor',        desc: 'Get a weighted eligibility estimate and improvement tips.',                 to: '/visa-predictor', protected: true },
   { icon: RoutePath,       title: 'Visa Timeline',         desc: 'Follow a six-phase relocation roadmap tailored to your prediction.',        to: '/visa-timeline',  protected: true },
   { icon: BookOpen,        title: 'Culture Guide',         desc: 'Explore cultural insights for your destination country.',                   to: '/culture-guide',  protected: true },
