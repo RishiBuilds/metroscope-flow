@@ -39,12 +39,12 @@ The dataset covers **500 cities** across six continents, modeled on 2026 cost-of
 
 ## Tech Stack
 
-| Layer        | Technologies                                                                           |
-| ------------ | -------------------------------------------------------------------------------------- |
+| Layer        | Technologies                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
 | **Frontend** | React 19, Vite 8, Tailwind CSS 4, React Router 8, Recharts 3, Axios, Lucide Icons, Motion (Framer Motion) |
-| **Backend**  | Node.js 22+, Express 5, Mongoose 9, JWT (httpOnly cookies), Helmet, express-rate-limit |
-| **Database** | MongoDB                                                                                |
-| **Tooling**  | Concurrent dev runner (`dev.mjs`), CSV seed pipeline                                   |
+| **Backend**  | Node.js 22+, Express 5, Mongoose 9, JWT (httpOnly cookies), Helmet, express-rate-limit                    |
+| **Database** | MongoDB                                                                                                   |
+| **Tooling**  | Concurrent dev runner (`dev.mjs`), CSV seed pipeline                                                      |
 
 For deeper design notes, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
@@ -264,21 +264,21 @@ metroscope-flow/
 
 ## Application Routes
 
-| Path              | Page                          | Auth required |
-| ----------------- | ----------------------------- | ------------- |
-| `/`               | Home                          | No            |
-| `/compare`        | City comparison               | No            |
-| `/discover`       | Discover quiz                 | No            |
-| `/login`          | Log in                        | No            |
-| `/signup`         | Create account                | No            |
-| `/share/:token`   | Shared comparison (public)    | No            |
-| `/saved`          | Saved comparisons             | Yes           |
-| `/profile`        | User profile                  | Yes           |
-| `/visa-predictor` | Visa eligibility predictor    | Yes           |
-| `/visa-timeline`  | Visa relocation timeline      | Yes           |
-| `/culture-guide`  | Cultural relocation guide     | Yes           |
-| `/checklist`      | Relocation checklist          | Yes           |
-| `*`               | 404 Not Found                 | No            |
+| Path              | Page                       | Auth required |
+| ----------------- | -------------------------- | ------------- |
+| `/`               | Home                       | No            |
+| `/compare`        | City comparison            | No            |
+| `/discover`       | Discover quiz              | No            |
+| `/login`          | Log in                     | No            |
+| `/signup`         | Create account             | No            |
+| `/share/:token`   | Shared comparison (public) | No            |
+| `/saved`          | Saved comparisons          | Yes           |
+| `/profile`        | User profile               | Yes           |
+| `/visa-predictor` | Visa eligibility predictor | Yes           |
+| `/visa-timeline`  | Visa relocation timeline   | Yes           |
+| `/culture-guide`  | Cultural relocation guide  | Yes           |
+| `/checklist`      | Relocation checklist       | Yes           |
+| `*`               | 404 Not Found              | No            |
 
 ---
 
@@ -329,40 +329,40 @@ All successful responses use `{ data: … }`. Errors return `{ error: { message,
 
 ### Comparisons
 
-| Method   | Path                           | Auth | Description                                   |
-| -------- | ------------------------------ | ---- | --------------------------------------------- |
-| `POST`   | `/api/comparisons`             | Yes  | Save a comparison                             |
-| `GET`    | `/api/comparisons`             | Yes  | List saved comparisons                        |
-| `GET`    | `/api/comparisons/:id`         | Yes  | Get a saved comparison with full city data    |
-| `DELETE` | `/api/comparisons/:id`         | Yes  | Delete a saved comparison                     |
-| `PATCH`  | `/api/comparisons/:id/notes`   | Yes  | Update notes on a saved comparison            |
-| `POST`   | `/api/comparisons/:id/share`   | Yes  | Generate a public share token                 |
-| `GET`    | `/api/comparisons/share/:token`| No   | View a shared comparison (no auth required)   |
+| Method   | Path                            | Auth | Description                                 |
+| -------- | ------------------------------- | ---- | ------------------------------------------- |
+| `POST`   | `/api/comparisons`              | Yes  | Save a comparison                           |
+| `GET`    | `/api/comparisons`              | Yes  | List saved comparisons                      |
+| `GET`    | `/api/comparisons/:id`          | Yes  | Get a saved comparison with full city data  |
+| `DELETE` | `/api/comparisons/:id`          | Yes  | Delete a saved comparison                   |
+| `PATCH`  | `/api/comparisons/:id/notes`    | Yes  | Update notes on a saved comparison          |
+| `POST`   | `/api/comparisons/:id/share`    | Yes  | Generate a public share token               |
+| `GET`    | `/api/comparisons/share/:token` | No   | View a shared comparison (no auth required) |
 
 ### Discover
 
-| Method | Path             | Auth | Description                                          |
-| ------ | ---------------- | ---- | ---------------------------------------------------- |
-| `POST` | `/api/discover`  | No   | Get city recommendations based on quiz answers       |
+| Method | Path            | Auth | Description                                    |
+| ------ | --------------- | ---- | ---------------------------------------------- |
+| `POST` | `/api/discover` | No   | Get city recommendations based on quiz answers |
 
 ### Relocation Tools
 
-| Method  | Path                              | Auth | Description                          |
-| ------- | --------------------------------- | ---- | ------------------------------------ |
-| `POST`  | `/api/visa/predict`               | Yes  | Run visa eligibility prediction      |
-| `POST`  | `/api/visa/results`               | Yes  | Save visa prediction results         |
-| `GET`   | `/api/visa/results`               | Yes  | Retrieve saved visa results          |
-| `GET`   | `/api/visa/timeline`              | Yes  | Get visa relocation timeline         |
-| `PATCH` | `/api/visa/timeline/:userId`      | Yes  | Update timeline phase status         |
-| `POST`  | `/api/culture/chat`               | Yes  | Get cultural relocation guidance     |
-| `POST`  | `/api/checklist`                  | Yes  | Create relocation checklist          |
-| `GET`   | `/api/checklist`                  | Yes  | Get user's checklist                 |
-| `PATCH` | `/api/checklist/:id`              | Yes  | Update checklist item status         |
+| Method  | Path                         | Auth | Description                      |
+| ------- | ---------------------------- | ---- | -------------------------------- |
+| `POST`  | `/api/visa/predict`          | Yes  | Run visa eligibility prediction  |
+| `POST`  | `/api/visa/results`          | Yes  | Save visa prediction results     |
+| `GET`   | `/api/visa/results`          | Yes  | Retrieve saved visa results      |
+| `GET`   | `/api/visa/timeline`         | Yes  | Get visa relocation timeline     |
+| `PATCH` | `/api/visa/timeline/:userId` | Yes  | Update timeline phase status     |
+| `POST`  | `/api/culture/chat`          | Yes  | Get cultural relocation guidance |
+| `POST`  | `/api/checklist`             | Yes  | Create relocation checklist      |
+| `GET`   | `/api/checklist`             | Yes  | Get user's checklist             |
+| `PATCH` | `/api/checklist/:id`         | Yes  | Update checklist item status     |
 
 ### Exchange Rates
 
-| Method | Path                  | Auth | Description                                |
-| ------ | --------------------- | ---- | ------------------------------------------ |
+| Method | Path                  | Auth | Description                                 |
+| ------ | --------------------- | ---- | ------------------------------------------- |
 | `GET`  | `/api/exchange-rates` | No   | Get supported currencies and exchange rates |
 
 ### Health
@@ -429,24 +429,24 @@ Ensure `CLIENT_URL` in `backend/.env` matches your deployed frontend URL for COR
 
 ### Backend (`backend/.env`)
 
-| Variable                          | Required | Default                                       | Description                          |
-| --------------------------------- | -------- | --------------------------------------------- | ------------------------------------ |
-| `PORT`                            | No       | `5000`                                        | API server port                      |
-| `MONGO_URI`                       | Yes      | `mongodb://localhost:27017/metroscope-flow`    | MongoDB connection string            |
-| `JWT_SECRET`                      | Yes      | —                                             | Secret for signing JWTs              |
-| `JWT_EXPIRES_IN`                  | No       | `7d`                                          | JWT expiration duration              |
-| `CLIENT_URL`                      | Yes      | `http://localhost:3000`                        | Frontend origin for CORS             |
-| `GEMINI_API_KEY`                  | No       | —                                             | Enables Gemini AI for culture guide  |
-| `DB_SERVER_SELECTION_TIMEOUT_MS`  | No       | `5000`                                        | MongoDB server selection timeout     |
-| `NODE_ENV`                        | No       | `development`                                 | Environment mode                     |
+| Variable                         | Required | Default                                     | Description                         |
+| -------------------------------- | -------- | ------------------------------------------- | ----------------------------------- |
+| `PORT`                           | No       | `5000`                                      | API server port                     |
+| `MONGO_URI`                      | Yes      | `mongodb://localhost:27017/metroscope-flow` | MongoDB connection string           |
+| `JWT_SECRET`                     | Yes      | —                                           | Secret for signing JWTs             |
+| `JWT_EXPIRES_IN`                 | No       | `7d`                                        | JWT expiration duration             |
+| `CLIENT_URL`                     | Yes      | `http://localhost:3000`                     | Frontend origin for CORS            |
+| `GEMINI_API_KEY`                 | No       | —                                           | Enables Gemini AI for culture guide |
+| `DB_SERVER_SELECTION_TIMEOUT_MS` | No       | `5000`                                      | MongoDB server selection timeout    |
+| `NODE_ENV`                       | No       | `development`                               | Environment mode                    |
 
 ### Frontend (`frontend/.env`)
 
-| Variable                 | Required | Default                    | Description                                |
-| ------------------------ | -------- | -------------------------- | ------------------------------------------ |
-| `VITE_API_URL`           | No       | `/api`                     | API base path                              |
-| `VITE_DEV_PROXY_TARGET`  | No       | `http://127.0.0.1:5000`    | Dev proxy target for API requests          |
-| `VITE_PORT`              | No       | `3000`                     | Vite dev server port                       |
+| Variable                | Required | Default                 | Description                       |
+| ----------------------- | -------- | ----------------------- | --------------------------------- |
+| `VITE_API_URL`          | No       | `/api`                  | API base path                     |
+| `VITE_DEV_PROXY_TARGET` | No       | `http://127.0.0.1:5000` | Dev proxy target for API requests |
+| `VITE_PORT`             | No       | `3000`                  | Vite dev server port              |
 
 ---
 
@@ -487,4 +487,4 @@ Set `GEMINI_API_KEY` in `backend/.env` to enable Gemini responses. It is optiona
 
 ## License
 
-MIT
+[MIT](LICENSE)
