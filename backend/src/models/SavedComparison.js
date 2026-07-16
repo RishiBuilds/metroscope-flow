@@ -25,6 +25,17 @@ const savedComparisonSchema = new mongoose.Schema(
         message: 'A comparison requires at least 2 cities.',
       },
     },
+    notes: {
+      type: String,
+      trim: true,
+      maxlength: [2000, 'Notes cannot exceed 2000 characters'],
+      default: '',
+    },
+    shareToken: {
+      type: String,
+      index: { unique: true, sparse: true },
+      default: null,
+    },
   },
   {
     timestamps: true,

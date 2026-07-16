@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bookmark, LogIn, AlertCircle, Trophy, TableProperties, ChartNoAxesCombined, Sparkles, WalletCards, HeartPulse, Leaf } from '../components/icons.jsx';
+import { Bookmark, LogIn, AlertCircle, Trophy, TableProperties, ChartNoAxesCombined, Sparkles, WalletCards, HeartPulse, Leaf, ShieldCheck } from '../components/icons.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useCurrency } from '../context/CurrencyContext.jsx';
 import { compareCities } from '../api/cities.js';
 import CityPicker from '../components/CityPicker.jsx';
 import SaveModal from '../components/SaveModal.jsx';
@@ -76,9 +77,25 @@ const METRIC_GROUPS = [
 ];
 
 const DECISION_GROUPS = [
-  { title: 'Economy', icon: WalletCards, weight: 0.4, metrics: METRIC_GROUPS[0].metrics.concat(METRIC_GROUPS[1].metrics) },
-  { title: 'Lifestyle', icon: HeartPulse, weight: 0.45, metrics: METRIC_GROUPS[2].metrics },
-  { title: 'Environment', icon: Leaf, weight: 0.15, metrics: METRIC_GROUPS[3].metrics },
+  { title: 'Affordability', icon: WalletCards, metrics: [
+    { label: 'Monthly rent', key: 'avg_monthly_rent_usd', low: true },
+    { label: 'Internet / month', key: 'internet_cost_usd', low: true },
+    { label: 'Average salary / year', key: 'avg_salary_usd' },
+    { label: 'Food cost index', key: 'food_cost_index', low: true },
+    { label: 'Transport index', key: 'transport_cost_index', low: true },
+  ] },
+  { title: 'Safety', icon: ShieldCheck, metrics: [
+    { label: 'Safety', key: 'safety_score' }
+  ] },
+  { title: 'Quality of Life', icon: Sparkles, metrics: [
+    { label: 'Quality of life', key: 'quality_of_life_score' }
+  ] },
+  { title: 'Healthcare', icon: HeartPulse, metrics: [
+    { label: 'Healthcare', key: 'healthcare_score' }
+  ] },
+  { title: 'Environment', icon: Leaf, metrics: [
+    { label: 'Pollution score', key: 'pollution_score', low: true }
+  ] },
 ];
 
 function scoreMetric(cities, metric) {
@@ -135,8 +152,7 @@ function AnimatedScoreRing({ score }) {
   );
 }
 
-function DecisionSummary({ cities, weights, onWeightChange }) {
-  const decision = makeDecision(cities, weights);
+function DecisionSummary({ cities, weights, onWeightChange, decision }) {
   const { recommended } = decision;
   const winningGroups = decision.groups.filter((group) => group.winners.some((city) => city._id === recommended.city._id));
   const leadText = decision.lead === 0
@@ -164,7 +180,7 @@ function DecisionSummary({ cities, weights, onWeightChange }) {
       </div>
 
       <motion.div
-        className="grid sm:grid-cols-3 gap-4 mt-4"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-4"
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
@@ -174,18 +190,18 @@ function DecisionSummary({ cities, weights, onWeightChange }) {
           const winnerNames = group.winners.map((city) => city.city).join(' · ');
           return (
             <motion.div key={group.title} className="card p-4" variants={fadeUp}>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-surface-500"><Icon size={15} className="text-brand-300" /> {group.title} winner</div>
-              <p className="font-bold text-lg mt-1">{winnerNames}</p>
-              <p className="text-xs text-surface-600 mt-1">{group.metrics.length} metrics · {Math.round(group.weight * 100)}% of default score</p>
-              <label className="block text-xs text-surface-600 mt-3" htmlFor={`weight-${group.title}`}>
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-surface-500"><Icon size={14} className="text-brand-300" /> {group.title} winner</div>
+              <p className="font-bold text-base mt-1 truncate" title={winnerNames}>{winnerNames}</p>
+              <p className="text-[10px] text-surface-600 mt-1">{group.metrics.length} metrics · {Math.round(group.weight * 100)}% weight</p>
+              <label className="block text-[10px] text-surface-600 mt-3" htmlFor={`weight-${group.title}`}>
                 Priority: {Math.round(group.weight * 100)}%
-                <input id={`weight-${group.title}`} className="weight-slider mt-2" type="range" min="0" max="100" value={Math.round(group.weight * 100)} onChange={(event) => onWeightChange(group.title.toLowerCase(), Number(event.target.value) / 100)} />
+                <input id={`weight-${group.title}`} className="weight-slider mt-2 w-full" type="range" min="0" max="100" value={Math.round(group.weight * 100)} onChange={(event) => onWeightChange(group.title.toLowerCase(), Number(event.target.value) / 100)} />
               </label>
             </motion.div>
           );
         })}
       </motion.div>
-      <p className="text-xs text-surface-600 mt-3">Adjust a priority and the other two scale proportionally, keeping your total at 100%.</p>
+      <p className="text-xs text-surface-600 mt-3">Adjust a priority and the others scale proportionally, keeping your total at 100%.</p>
     </motion.section>
   );
 }
@@ -253,6 +269,7 @@ function ChartSection({ title, subtitle, children }) {
 
 export default function ComparePage() {
   const { user } = useAuth();
+  const { currency, symbols, formatCurrency } = useCurrency();
   const [searchParams] = useSearchParams();
 
   const [selected, setSelected]     = useState([]);
@@ -261,7 +278,16 @@ export default function ComparePage() {
   const [error, setError]           = useState('');
   const [showSave, setShowSave]     = useState(false);
   const [view, setView]             = useState('charts');
-  const [weights, setWeights]       = useState({ economy: 0.40, lifestyle: 0.45, environment: 0.15 });
+  const [weights, setWeights]       = useState(() => {
+    const saved = localStorage.getItem('metroscope_weights');
+    return saved ? JSON.parse(saved) : { affordability: 0.25, safety: 0.20, 'quality of life': 0.20, healthcare: 0.20, environment: 0.15 };
+  });
+
+  const cityDataIdsRef = useRef('');
+
+  useEffect(() => {
+    localStorage.setItem('metroscope_weights', JSON.stringify(weights));
+  }, [weights]);
 
   const normalizeCities = (cities) => cities.map((city) => ({
     ...city,
@@ -275,10 +301,18 @@ export default function ComparePage() {
       const remaining = 1 - changed;
       const otherTotal = otherKeys.reduce((total, key) => total + current[key], 0);
       const next = { ...current, [changedKey]: changed };
+      
+      let sumOfOthers = 0;
       otherKeys.forEach((key, index) => {
-        next[key] = index === otherKeys.length - 1
-          ? Math.max(0, remaining - next[otherKeys[0]])
-          : otherTotal ? (current[key] / otherTotal) * remaining : remaining / otherKeys.length;
+        if (index === otherKeys.length - 1) {
+          next[key] = Math.max(0, parseFloat((remaining - sumOfOthers).toFixed(4)));
+        } else {
+          const val = otherTotal 
+            ? (current[key] / otherTotal) * remaining 
+            : remaining / otherKeys.length;
+          next[key] = parseFloat(val.toFixed(4));
+          sumOfOthers += next[key];
+        }
       });
       return next;
     });
@@ -295,7 +329,10 @@ export default function ComparePage() {
     compareCities(ids)
       .then((res) => {
         const cities = res.data.data ?? [];
+        const normalized = normalizeCities(cities);
         setSelected(cities.map(({ _id, city, country }) => ({ _id, city, country })));
+        setCityData(normalized);
+        cityDataIdsRef.current = normalized.map((c) => c._id).sort().join(',');
       })
       .catch(() => setError('Could not load comparison data. Please try again.'))
       .finally(() => setLoading(false));
@@ -303,20 +340,59 @@ export default function ComparePage() {
 
   useEffect(() => {
     if (selected.length < 2) { setCityData([]); return; }
+ 
+    const selectedIds = selected.map((c) => c._id).sort().join(',');
+    if (cityDataIdsRef.current === selectedIds) return;
+
     let cancelled = false;
     setLoading(true);
     setError('');
     compareCities(selected.map((c) => c._id))
       .then((res) => {
-        if (!cancelled) setCityData(normalizeCities(res.data.data ?? []));
+        if (!cancelled) {
+          const normalized = normalizeCities(res.data.data ?? []);
+          setCityData(normalized);
+          cityDataIdsRef.current = normalized.map((c) => c._id).sort().join(',');
+        }
       })
       .catch(() => {
         if (!cancelled) setError('Could not load comparison data. Please try again.');
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [selected]);
+  }, [selected]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const summaryMetrics = [
+    { label: 'Monthly Rent',        key: 'avg_monthly_rent_usd',     format: (v) => formatCurrency(v) },
+    { label: `Internet (${symbols[currency] || '$'}/mo)`,     key: 'internet_cost_usd',        format: (v) => formatCurrency(v) },
+    { label: `Avg Salary (${symbols[currency] || '$'}/yr)`,   key: 'avg_salary_usd',           format: (v) => formatCurrency(v) },
+    { label: 'Food Cost Index',     key: 'food_cost_index',          format: (v) => v },
+    { label: 'Transport Index',     key: 'transport_cost_index',     format: (v) => v },
+    { label: 'Quality of Life',     key: 'quality_of_life_score',    format: (v) => `${v}/100` },
+    { label: 'Healthcare',          key: 'healthcare_score',         format: (v) => `${v}/100` },
+    { label: 'Safety',              key: 'safety_score',             format: (v) => `${v}/100` },
+    { label: 'Pollution (Lower is better)', key: 'pollution_score', format: (v) => `${v}/100` },
+  ];
+
+  const metricGroups = [
+    { title: 'Affordability', note: 'Lower costs and higher salary are better.', metrics: [
+      { label: 'Monthly rent', key: 'avg_monthly_rent_usd', low: true, format: (v) => formatCurrency(v) },
+      { label: 'Internet / month', key: 'internet_cost_usd', low: true, format: (v) => formatCurrency(v) },
+      { label: 'Average salary / year', key: 'avg_salary_usd', format: (v) => formatCurrency(v) },
+    ] },
+    { title: 'Cost of Living', note: 'Indices use NYC = 100; lower is more affordable.', metrics: [
+      { label: 'Food cost index', key: 'food_cost_index', low: true, format: (v) => v },
+      { label: 'Transport index', key: 'transport_cost_index', low: true, format: (v) => v },
+    ] },
+    { title: 'Quality, Safety & Healthcare', note: 'Higher scores are better.', metrics: [
+      { label: 'Quality of life', key: 'quality_of_life_score', format: (v) => v + '/100' },
+      { label: 'Healthcare', key: 'healthcare_score', format: (v) => v + '/100' },
+      { label: 'Safety', key: 'safety_score', format: (v) => v + '/100' },
+    ] },
+    { title: 'Environment', note: 'Lower pollution is better.', metrics: [{ label: 'Pollution score', key: 'pollution_score', low: true, format: (v) => v + '/100' }] },
+  ];
+
+  const decision = cityData.length >= 2 ? makeDecision(cityData, weights) : null;
   const defaultSaveName = selected.map((c) => c.city).join(' vs ');
 
   return (
@@ -374,27 +450,39 @@ export default function ComparePage() {
               {cityData.map((c, i) => (
                 <span key={c._id}>
                   <strong style={{ color: CITY_COLORS[i % CITY_COLORS.length] }}>{c.city}</strong>
+                  {decision && decision.recommended.city._id === c._id && (
+                    <motion.span
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.4, ...SPRING_POP }}
+                      className="inline-flex items-center gap-0.5 ml-1.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-brand-500/20 text-brand-300 border border-brand-500/30"
+                    >
+                      <Trophy size={9} /> Best Match
+                    </motion.span>
+                  )}
                   {i < cityData.length - 1 ? ' vs ' : ''}
                 </span>
               ))}
             </p>
-            {user ? (
-              <motion.button
-                onClick={() => setShowSave(true)}
-                className="btn-primary text-sm py-2 px-4 shrink-0"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <Bookmark size={15} /> Save this comparison
-              </motion.button>
-            ) : (
-              <Link to="/login" className="btn-ghost text-sm border border-surface-700/60 shrink-0">
-                <LogIn size={15} /> Log in to save
-              </Link>
-            )}
+            <div className="flex items-center gap-2 shrink-0">
+              {user ? (
+                <motion.button
+                  onClick={() => setShowSave(true)}
+                  className="btn-primary text-sm py-2 px-4"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <Bookmark size={15} /> Save
+                </motion.button>
+              ) : (
+                <Link to="/login" className="btn-ghost text-sm border border-surface-700/60">
+                  <LogIn size={15} /> Log in to save
+                </Link>
+              )}
+            </div>
           </motion.div>
 
-          <DecisionSummary cities={cityData} weights={weights} onWeightChange={updateWeight} />
+          {decision && <DecisionSummary cities={cityData} weights={weights} onWeightChange={updateWeight} decision={decision} />}
 
           <div className="flex items-center justify-between gap-3 mb-4">
             <div><h2 className="font-bold text-lg">Decision drivers</h2><p className="text-xs text-surface-600">Use the detailed data below to validate what matters most to you. Trophies mark the best metric result.</p></div>
@@ -411,7 +499,7 @@ export default function ComparePage() {
               initial="hidden"
               animate="visible"
             >
-              {METRIC_GROUPS.map((group) => <MetricGroup key={group.title} group={group} cities={cityData} />)}
+              {metricGroups.map((group) => <MetricGroup key={group.title} group={group} cities={cityData} />)}
             </motion.div>
           )}
 
@@ -442,7 +530,7 @@ export default function ComparePage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {SUMMARY_METRICS.map(({ label, key, format }, ri) => (
+                       {summaryMetrics.map(({ label, key, format }, ri) => (
                         <tr key={key} className={ri % 2 === 0 ? 'bg-surface-900/20' : ''}>
                           <td className="px-5 py-2.5 text-surface-400 font-medium whitespace-nowrap">{label}</td>
                           {cityData.map((c) => (

@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookmarkX, BookmarkCheck, ArrowRight, Loader2, Trash2, AlertCircle, Globe2 } from '../components/icons.jsx';
-import { listComparisons, deleteComparison } from '../api/comparisons.js';
+import {
+  BookmarkX, BookmarkCheck, ArrowRight, Loader2, Trash2,
+  AlertCircle, Globe2, Share, Edit, X, CheckCircle2,
+} from '../components/icons.jsx';
+import {
+  listComparisons, deleteComparison,
+  updateComparisonNotes, shareComparison,
+} from '../api/comparisons.js';
 import { CITY_COLORS } from '../components/ComparisonCharts.jsx';
 import Skeleton from '../components/Skeleton.jsx';
 import { Modal, useToast } from '../components/ui.jsx';
@@ -53,9 +59,130 @@ function ConfirmDeleteDialog({ name, onConfirm, onCancel, deleting }) {
   );
 }
 
-function ComparisonCard({ comp, onDelete }) {
+function ShareDialog({ comp, onClose }) {
+  const [token, setToken]   = useState(comp.shareToken ?? null);
+  const [loading, setLoading] = useState(!comp.shareToken);
+  const [copied, setCopied] = useState(false);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (token) { setLoading(false); return; }
+    shareComparison(comp._id)
+      .then((res) => setToken(res.data.data.token))
+      .catch(() => toast.error('Could not create share link.'))
+      .finally(() => setLoading(false));
+  }, []); 
+
+  const shareUrl = token ? `${window.location.origin}/share/${token}` : '';
+
+  const handleCopy = async () => {
+    if (!shareUrl) return;
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
+
+  return (
+    <Modal title="Share comparison" onClose={onClose}>
+      <p className="text-sm text-surface-500 mb-4">
+        Anyone with this link can view a read-only snapshot of "{comp.name}".
+      </p>
+      {loading ? (
+        <div className="flex items-center gap-2 text-surface-500 text-sm py-3">
+          <Loader2 size={16} className="animate-spin" /> Generating link…
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <input
+            readOnly
+            value={shareUrl}
+            className="flex-1 bg-surface-900/60 border border-surface-700/60 rounded-lg px-3 py-2 text-xs text-surface-400 font-mono outline-none select-all"
+            onFocus={(e) => e.target.select()}
+          />
+          <motion.button
+            onClick={handleCopy}
+            className={`btn-primary text-sm py-2 px-4 shrink-0 ${copied ? 'bg-green-600 border-green-600' : ''}`}
+            whileTap={{ scale: 0.95 }}
+          >
+            {copied ? <CheckCircle2 size={15} /> : <Share size={15} />}
+            {copied ? 'Copied!' : 'Copy'}
+          </motion.button>
+        </div>
+      )}
+      <a
+        href={shareUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block mt-3 text-xs text-brand-400 hover:underline"
+      >
+        Open preview →
+      </a>
+    </Modal>
+  );
+}
+
+function NotesDialog({ comp, onSave, onClose }) {
+  const [notes, setNotes]     = useState(comp.notes ?? '');
+  const [saving, setSaving]   = useState(false);
+  const toast = useToast();
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await updateComparisonNotes(comp._id, notes);
+      onSave(comp._id, notes);
+      toast.success('Notes saved.');
+      onClose();
+    } catch {
+      toast.error('Could not save notes. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal title="Notes" onClose={onClose}>
+      <p className="text-sm text-surface-500 mb-3">
+        Add personal notes to "{comp.name}" — visible only to you.
+      </p>
+      <textarea
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        maxLength={2000}
+        rows={5}
+        placeholder="What stood out? Any dealbreakers? Notes on cost of living…"
+        className="w-full bg-surface-900/60 border border-surface-700/60 rounded-xl px-4 py-3 text-sm text-surface-200 placeholder:text-surface-600 outline-none focus:border-brand-500/50 resize-none"
+      />
+      <div className="flex items-center justify-between mt-1 mb-4">
+        <span className="text-xs text-surface-700">{notes.length}/2000</span>
+        {notes !== (comp.notes ?? '') && (
+          <span className="text-xs text-brand-400">Unsaved changes</span>
+        )}
+      </div>
+      <div className="flex gap-2">
+        <button onClick={onClose} className="btn-ghost flex-1 border border-surface-700/60 text-sm">
+          Cancel
+        </button>
+        <motion.button
+          onClick={handleSave}
+          disabled={saving}
+          className="btn-primary flex-1 text-sm disabled:opacity-50"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+        >
+          {saving ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
+          Save Notes
+        </motion.button>
+      </div>
+    </Modal>
+  );
+}
+
+function ComparisonCard({ comp, onDelete, onNotesUpdate }) {
   const navigate = useNavigate();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [shareOpen, setShareOpen]     = useState(false);
+  const [notesOpen, setNotesOpen]     = useState(false);
   const [deleting, setDeleting]       = useState(false);
   const toast = useToast();
 
@@ -78,58 +205,91 @@ function ComparisonCard({ comp, onDelete }) {
   return (
     <>
       <motion.div
-        className="glass rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+        className="glass rounded-2xl p-5 flex flex-col gap-3"
         variants={fadeUp}
-        whileHover={{ y: -4, boxShadow: '0 16px 36px oklch(0.04 0.02 260 / 0.28)' }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={{ y: -3, boxShadow: '0 16px 36px oklch(0.04 0.02 260 / 0.28)' }}
         transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       >
-        <div className="w-10 h-10 rounded-xl bg-brand-900/60 flex items-center justify-center shrink-0">
-          <BookmarkCheck size={18} className="text-brand-400" />
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm sm:text-base truncate">{comp.name}</h3>
-          <div className="flex flex-wrap gap-1.5 mt-1.5">
-            {comp.cityIds.map((city, i) => (
-              <span
-                key={city._id}
-                className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border"
-                style={{
-                  color: CITY_COLORS[i % CITY_COLORS.length],
-                  borderColor: `${CITY_COLORS[i % CITY_COLORS.length]}40`,
-                  background: `${CITY_COLORS[i % CITY_COLORS.length]}12`,
-                }}
-              >
-                <Globe2 size={10} />
-                {city.city}
-              </span>
-            ))}
+        <div className="flex items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-brand-900/60 flex items-center justify-center shrink-0">
+              <BookmarkCheck size={17} className="text-brand-400" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-sm sm:text-base truncate">{comp.name}</h3>
+              <p className="text-xs text-surface-600">Saved {relativeDate(comp.createdAt)}</p>
+            </div>
           </div>
-          <p className="text-xs text-surface-600 mt-1.5">Saved {relativeDate(comp.createdAt)}</p>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <motion.button
+              onClick={() => setNotesOpen(true)}
+              className="btn-ghost p-2 text-surface-500 hover:text-brand-400 hover:bg-brand-500/10"
+              aria-label="Edit notes"
+              title="Edit notes"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Edit size={15} />
+            </motion.button>
+            <motion.button
+              onClick={() => setShareOpen(true)}
+              className="btn-ghost p-2 text-surface-500 hover:text-brand-400 hover:bg-brand-500/10"
+              aria-label="Share comparison"
+              title="Share"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Share size={15} />
+            </motion.button>
+            <motion.button
+              onClick={() => setConfirmOpen(true)}
+              id={`delete-comp-${comp._id}`}
+              className="btn-ghost p-2 text-red-400/70 hover:text-red-400 hover:bg-red-500/10"
+              aria-label="Delete comparison"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Trash2 size={15} />
+            </motion.button>
+            <motion.button
+              onClick={handleOpen}
+              id={`open-comp-${comp._id}`}
+              className="btn-primary text-sm py-1.5 px-3"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              Open <ArrowRight size={13} />
+            </motion.button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <motion.button
-            onClick={() => setConfirmOpen(true)}
-            id={`delete-comp-${comp._id}`}
-            className="btn-ghost p-2 text-red-400/70 hover:text-red-400 hover:bg-red-500/10"
-            aria-label="Delete comparison"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Trash2 size={16} />
-          </motion.button>
-          <motion.button
-            onClick={handleOpen}
-            id={`open-comp-${comp._id}`}
-            className="btn-primary text-sm py-2 px-4"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            Open <ArrowRight size={14} />
-          </motion.button>
+        <div className="flex flex-wrap gap-1.5 ml-12">
+          {comp.cityIds.map((city, i) => (
+            <span
+              key={city._id}
+              className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border"
+              style={{
+                color: CITY_COLORS[i % CITY_COLORS.length],
+                borderColor: `${CITY_COLORS[i % CITY_COLORS.length]}40`,
+                background: `${CITY_COLORS[i % CITY_COLORS.length]}12`,
+              }}
+            >
+              <Globe2 size={10} />
+              {city.city}
+            </span>
+          ))}
         </div>
+
+        {comp.notes && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="ml-12 p-3 rounded-lg bg-surface-900/50 border border-surface-700/30"
+          >
+            <p className="text-xs text-surface-400 italic line-clamp-2">"{comp.notes}"</p>
+          </motion.div>
+        )}
       </motion.div>
 
       <AnimatePresence>
@@ -139,6 +299,16 @@ function ComparisonCard({ comp, onDelete }) {
             onConfirm={handleDelete}
             onCancel={() => setConfirmOpen(false)}
             deleting={deleting}
+          />
+        )}
+        {shareOpen && (
+          <ShareDialog comp={comp} onClose={() => setShareOpen(false)} />
+        )}
+        {notesOpen && (
+          <NotesDialog
+            comp={comp}
+            onSave={onNotesUpdate}
+            onClose={() => setNotesOpen(false)}
           />
         )}
       </AnimatePresence>
@@ -163,6 +333,8 @@ export default function SavedPage() {
   useEffect(() => { fetchComps(); }, [fetchComps]);
 
   const handleDelete = (id) => setComps((prev) => prev.filter((c) => c._id !== id));
+  const handleNotesUpdate = (id, notes) =>
+    setComps((prev) => prev.map((c) => (c._id === id ? { ...c, notes } : c)));
 
   return (
     <main className="flex-1 px-4 sm:px-6 py-10 max-w-3xl mx-auto w-full">
@@ -208,7 +380,7 @@ export default function SavedPage() {
           <div>
             <h2 className="text-lg font-semibold mb-1">No saved comparisons yet</h2>
             <p className="text-sm text-surface-600 max-w-xs">
-              Compare cities and hit "Save this comparison" to bookmark it here for later.
+              Compare cities and hit "Save" to bookmark it here for later.
             </p>
           </div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} transition={T_DEFAULT}>
@@ -227,7 +399,12 @@ export default function SavedPage() {
           animate="visible"
         >
           {comps.map((comp) => (
-            <ComparisonCard key={comp._id} comp={comp} onDelete={handleDelete} />
+            <ComparisonCard
+              key={comp._id}
+              comp={comp}
+              onDelete={handleDelete}
+              onNotesUpdate={handleNotesUpdate}
+            />
           ))}
         </motion.div>
       )}

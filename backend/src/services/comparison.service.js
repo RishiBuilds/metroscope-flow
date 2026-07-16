@@ -73,3 +73,43 @@ export async function removeComparison({ id, userId }) {
     throw new AppError('Comparison not found.', 404, 'NOT_FOUND');
   }
 }
+
+export async function updateNotes({ id, userId, notes }) {
+  if (!isValidObjectId(id)) {
+    throw new AppError(`Invalid comparison ID: ${id}`, 400, 'VALIDATION_ERROR');
+  }
+  const comparison = await SavedComparison.findOneAndUpdate(
+    { _id: id, userId },
+    { notes: typeof notes === 'string' ? notes.trim().slice(0, 2000) : '' },
+    { new: true, runValidators: true }
+  ).lean();
+  if (!comparison) {
+    throw new AppError('Comparison not found.', 404, 'NOT_FOUND');
+  }
+  return comparison;
+}
+
+export async function createShareToken({ id, userId }) {
+  if (!isValidObjectId(id)) {
+    throw new AppError(`Invalid comparison ID: ${id}`, 400, 'VALIDATION_ERROR');
+  }
+  const comparison = await SavedComparison.findOne({ _id: id, userId }).lean();
+  if (!comparison) {
+    throw new AppError('Comparison not found.', 404, 'NOT_FOUND');
+  }
+  if (comparison.shareToken) return comparison.shareToken;
+  const token = crypto.randomUUID().replace(/-/g, '');
+  await SavedComparison.findByIdAndUpdate(id, { shareToken: token });
+  return token;
+}
+
+export async function getByShareToken(token) {
+  if (!token || typeof token !== 'string') {
+    throw new AppError('Invalid share token.', 400, 'VALIDATION_ERROR');
+  }
+  const comparison = await SavedComparison.findOne({ shareToken: token }).lean();
+  if (!comparison) {
+    throw new AppError('Shared comparison not found or link has expired.', 404, 'NOT_FOUND');
+  }
+  return populateCitiesInSavedOrder(comparison);
+}

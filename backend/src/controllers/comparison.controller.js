@@ -23,3 +23,25 @@ export async function deleteComparison(req, res) {
   await comparisonService.removeComparison({ id: req.params.id, userId: req.user.id });
   res.json({ data: { message: 'Comparison deleted successfully.' } });
 }
+
+export async function updateNotes(req, res) {
+  const comparison = await comparisonService.updateNotes({
+    id: req.params.id,
+    userId: req.user.id,
+    notes: req.body.notes,
+  });
+  res.json({ data: comparison });
+}
+
+export async function shareComparison(req, res) {
+  const token = await comparisonService.createShareToken({
+    id: req.params.id,
+    userId: req.user.id,
+  });
+  res.json({ data: { token, url: `${process.env.CLIENT_URL}/share/${token}` } });
+}
+
+export async function getSharedComparison(req, res) {
+  const comparison = await comparisonService.getByShareToken(req.params.token);
+  res.json({ data: comparison });
+}
