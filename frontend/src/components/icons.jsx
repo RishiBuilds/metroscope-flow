@@ -45,6 +45,12 @@ import {
   ViewIcon,
   ViewOffIcon,
   Wallet01Icon,
+  Download01Icon,
+  Edit01Icon,
+  File01Icon,
+  Share01Icon,
+  Share02Icon,
+  SlidersHorizontalIcon,
 } from '@hugeicons/core-free-icons';
 
 function createIcon(icon) {
@@ -99,3 +105,9 @@ export const CheckListIcon2 = createIcon(CheckListIcon);
 export const Database = createIcon(Database01Icon);
 export const InformationCircle = createIcon(InformationCircleIcon);
 export const Clock = createIcon(Clock01Icon);
+export const Share = createIcon(Share02Icon);
+export const Share2 = createIcon(Share01Icon);
+export const Download = createIcon(Download01Icon);
+export const Edit = createIcon(Edit01Icon);
+export const FileIcon = createIcon(File01Icon);
+export const Sliders = createIcon(SlidersHorizontalIcon);

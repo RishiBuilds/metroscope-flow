@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router';
 import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { CurrencyProvider } from './context/CurrencyContext.jsx';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
@@ -19,6 +20,8 @@ import VisaPredictorPage from './pages/VisaPredictorPage.jsx';
 import VisaTimelinePage from './pages/VisaTimelinePage.jsx';
 import CultureGuidePage from './pages/CultureGuidePage.jsx';
 import ChecklistPage from './pages/ChecklistPage.jsx';
+import SharePage from './pages/SharePage.jsx';
+import DiscoverPage from './pages/DiscoverPage.jsx';
 
 function AnimatedOutlet() {
   const location = useLocation();
@@ -41,18 +44,20 @@ function AnimatedOutlet() {
 function RootLayout() {
   return (
     <AuthProvider>
-      <ToastProvider>
-      <ErrorBoundary>
-        <a href="#main-content" className="skip-link">Skip to main content</a>
-        <div className="flex flex-col min-h-dvh">
-          <Navbar />
-          <div id="main-content" tabIndex={-1} className="flex flex-col flex-1 focus:outline-none">
-            <AnimatedOutlet />
+      <CurrencyProvider>
+        <ToastProvider>
+        <ErrorBoundary>
+          <a href="#main-content" className="skip-link">Skip to main content</a>
+          <div className="flex flex-col min-h-dvh">
+            <Navbar />
+            <div id="main-content" tabIndex={-1} className="flex flex-col flex-1 focus:outline-none">
+              <AnimatedOutlet />
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
-      </ErrorBoundary>
-      </ToastProvider>
+        </ErrorBoundary>
+        </ToastProvider>
+      </CurrencyProvider>
     </AuthProvider>
   );
 }
@@ -86,6 +91,8 @@ const router = createBrowserRouter([
       { path: '/visa-timeline', element: <ProtectedRoute><VisaTimelinePage /></ProtectedRoute> },
       { path: '/culture-guide', element: <ProtectedRoute><CultureGuidePage /></ProtectedRoute> },
       { path: '/checklist', element: <ProtectedRoute><ChecklistPage /></ProtectedRoute> },
+      { path: '/share/:token', element: <SharePage /> },
+      { path: '/discover', element: <DiscoverPage /> },
 
       { path: '*', element: <NotFoundPage /> },
     ],
