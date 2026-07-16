@@ -12,6 +12,8 @@ import comparisonRoutes from './routes/comparison.routes.js';
 import visaRoutes from './routes/visa.routes.js';
 import checklistRoutes from './routes/checklist.routes.js';
 import cultureRoutes from './routes/culture.routes.js';
+import exchangeRatesRoutes from './routes/exchangeRates.routes.js';
+import discoverRoutes from './routes/discover.routes.js';
 
 const app = express();
 
@@ -32,6 +34,8 @@ app.use('/api/cities', cityRoutes);
 app.use('/api/visa', visaRoutes);
 app.use('/api/checklist', checklistRoutes);
 app.use('/api/culture', cultureRoutes);
+app.use('/api/exchange-rates', exchangeRatesRoutes);
+app.use('/api/discover', discoverRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
