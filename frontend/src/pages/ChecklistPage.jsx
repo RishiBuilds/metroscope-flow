@@ -71,21 +71,25 @@ export default function ChecklistPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1, ease: EASE }}
       >
-        <Card className="p-5 mt-5">
+        <div className="glow-card rounded-2xl p-6 mt-6">
           <div className="grid sm:grid-cols-3 gap-3">
-            <select className="input-base" value={country} onChange={(e) => setCountry(e.target.value)}>
-              {countries.map((c) => <option key={c}>{c}</option>)}
-            </select>
-            <select className="input-base" value={moveType} onChange={(e) => setMoveType(e.target.value)}>
-              {['work', 'study', 'retirement', 'family'].map((x) => <option key={x}>{x}</option>)}
-            </select>
+            <div className="select-wrapper">
+              <select value={country} onChange={(e) => setCountry(e.target.value)}>
+                {countries.map((c) => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="select-wrapper">
+              <select value={moveType} onChange={(e) => setMoveType(e.target.value)}>
+                {['work', 'study', 'retirement', 'family'].map((x) => <option key={x} className="capitalize">{x}</option>)}
+              </select>
+            </div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-              <Button onClick={generate} className="w-full">
+              <Button onClick={generate} className="w-full shadow-md">
                 {list ? 'Regenerate' : 'Generate checklist'}
               </Button>
             </motion.div>
           </div>
-        </Card>
+        </div>
       </motion.div>
 
       <AnimatePresence>
@@ -97,13 +101,13 @@ export default function ChecklistPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: EASE }}
           >
-            <div className="mt-6 flex justify-between text-sm">
-              <span>{done} of {total} complete</span>
-              <span>{pct}%</span>
+            <div className="mt-8 flex justify-between text-sm font-semibold">
+              <span className="text-surface-300">{done} of {total} complete</span>
+              <span className="text-brand-400 font-extrabold">{pct}%</span>
             </div>
-            <div className="h-3 bg-surface-800 rounded mt-2 overflow-hidden">
+            <div className="h-3 bg-surface-900/80 border border-surface-700/40 rounded-full mt-2 overflow-hidden p-0.5 shadow-inner">
               <motion.div
-                className="h-full bg-brand-400 rounded"
+                className="h-full bg-gradient-to-r from-brand-500 to-brand-400 rounded-full shadow-[0_0_12px_oklch(0.55_0.24_260_/_0.5)]"
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
                 transition={{ duration: 0.5, ease: EASE }}
@@ -111,25 +115,25 @@ export default function ChecklistPage() {
             </div>
 
             <motion.div
-              className="space-y-4 mt-6"
+              className="space-y-5 mt-6"
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
             >
               {groups.map(([category, items]) => (
                 <motion.div key={category} variants={fadeUp}>
-                  <Card className="p-5">
-                    <div className="flex justify-between">
-                      <h2 className="font-bold">{category}</h2>
-                      <span className="text-xs text-brand-400">
+                  <div className="glow-card rounded-2xl p-6">
+                    <div className="flex justify-between items-center border-b border-surface-700/40 pb-3">
+                      <h2 className="font-extrabold text-lg">{category}</h2>
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-400">
                         {items.filter((i) => i.done).length}/{items.length}
                       </span>
                     </div>
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-4 space-y-3">
                       {items.map((item) => (
                         <motion.label
                           key={item.id}
-                          className="flex items-center gap-2 text-sm cursor-pointer"
+                          className={`checkbox-container ${item.done ? 'done' : ''}`}
                           whileHover={{ x: 2 }}
                           transition={{ duration: 0.12 }}
                         >
@@ -138,11 +142,12 @@ export default function ChecklistPage() {
                             checked={item.done}
                             onChange={() => toggle(item)}
                           />
-                          {item.text}
+                          <span className="checkbox-checkmark" />
+                          <span>{item.text}</span>
                         </motion.label>
                       ))}
                     </div>
-                  </Card>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>

@@ -67,6 +67,7 @@ function ScoreGauge({ score, label, confidence }) {
         viewBox="0 0 160 160"
         aria-label={`Visa score ${score} out of 100`}
         role="img"
+        className="filter drop-shadow-[0_0_12px_oklch(0.67_0.22_260_/_0.3)]"
       >
         <circle
           cx={GAUGE_CX}
@@ -97,7 +98,7 @@ function ScoreGauge({ score, label, confidence }) {
           textAnchor="middle"
           dominantBaseline="middle"
           className="font-display"
-          style={{ fontSize: '2rem', fontWeight: 800, fill: 'oklch(0.87 0.12 260)', fontFamily: 'var(--font-display)' }}
+          style={{ fontSize: '2rem', fontWeight: 800, fill: 'oklch(0.92 0.02 260)', fontFamily: 'var(--font-display)' }}
         >
           {counted}
         </text>
@@ -117,31 +118,35 @@ function ScoreGauge({ score, label, confidence }) {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ ...SPRING_POP, delay: 0.5 }}
       >
-        <Badge className="mt-1">{confidence} confidence</Badge>
+        <Badge className="mt-1 bg-brand-500/20 border-brand-500/40 text-brand-400 font-bold">{confidence} confidence</Badge>
       </motion.div>
 
-      <h2 className="text-xl font-bold text-center">{label}</h2>
+      <h2 className="text-xl font-extrabold text-center mt-1">{label}</h2>
     </div>
   );
 }
 
 const Field = ({ label, children }) => (
-  <label className="flex flex-col gap-1 text-sm font-semibold text-surface-500">
+  <label className="flex flex-col gap-1.5 text-sm font-semibold text-surface-400">
     {label}{children}
   </label>
 );
 
 function StepProgress({ step }) {
   return (
-    <div className="flex gap-2 mt-7">
+    <div className="flex gap-2.5 mt-7">
       {[1, 2, 3].map((n) => (
         <motion.div
           key={n}
-          className="h-2 flex-1 rounded"
+          className="h-2 flex-1 rounded-full overflow-hidden bg-surface-900 border border-surface-700/40"
           initial={false}
-          animate={{ background: n <= step ? 'oklch(0.67 0.22 260)' : 'oklch(0.18 0.04 260)' }}
-          transition={{ duration: 0.3 }}
-        />
+        >
+          <motion.div
+            className="h-full bg-brand-400 rounded-full shadow-[0_0_8px_oklch(0.67_0.22_260_/_0.5)]"
+            animate={{ width: n <= step ? '100%' : '0%' }}
+            transition={{ duration: 0.3 }}
+          />
+        </motion.div>
       ))}
     </div>
   );
@@ -190,19 +195,19 @@ export default function VisaPredictorPage() {
           Your <span className="gradient-text">Visa outlook</span>
         </motion.h1>
 
-        <div className="grid md:grid-cols-[300px_1fr] gap-5">
+        <div className="grid md:grid-cols-[320px_1fr] gap-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            <Card className="p-6 flex flex-col items-center text-center">
+            <div className="glow-card rounded-2xl p-6 flex flex-col items-center text-center h-full justify-center">
               <ScoreGauge
                 score={result.score}
                 label={result.label}
                 confidence={result.confidence}
               />
-            </Card>
+            </div>
           </motion.div>
 
           <motion.div
@@ -210,10 +215,10 @@ export default function VisaPredictorPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.25, ease: EASE }}
           >
-            <Card className="p-6">
-              <h2 className="font-bold text-lg">How to improve</h2>
+            <div className="glow-card rounded-2xl p-6">
+              <h2 className="font-extrabold text-lg">How to improve your score</h2>
               <motion.ol
-                className="list-decimal pl-5 mt-3 space-y-2 text-surface-500"
+                className="list-decimal pl-5 mt-4 space-y-2.5 text-surface-300 text-sm"
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
@@ -226,17 +231,17 @@ export default function VisaPredictorPage() {
                 ))}
               </motion.ol>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-wrap gap-3 mt-8 pt-5 border-t border-surface-700/40">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-                  <Button onClick={save} disabled={saved}>
-                    {saved ? 'Saved' : 'Save this result'}
+                  <Button onClick={save} disabled={saved} className="shadow-md">
+                    {saved ? 'Saved to Profile' : 'Save this result'}
                   </Button>
                 </motion.div>
-                <Link className="btn-ghost border border-surface-700/60" to="/visa-timeline">
+                <Link className="btn-ghost border border-surface-700/60 rounded-xl px-4 text-xs font-semibold" to="/visa-timeline">
                   View your Visa Timeline →
                 </Link>
               </div>
-            </Card>
+            </div>
           </motion.div>
         </div>
 
@@ -245,19 +250,19 @@ export default function VisaPredictorPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.45, ease: EASE }}
         >
-          <Card className="p-5 mt-5">
-            <h2 className="font-bold mb-4">Destination competitiveness</h2>
+          <div className="glow-card rounded-2xl p-6 mt-6">
+            <h2 className="font-extrabold text-lg mb-4">Destination competitiveness</h2>
             <div className="h-72">
               <ResponsiveContainer>
                 <BarChart data={result.country_rank} layout="vertical">
-                  <XAxis type="number" domain={[0, 100]} />
-                  <YAxis dataKey="country" type="category" width={105} />
-                  <Tooltip />
-                  <Bar dataKey="score" fill="#49b7a1" radius={[0, 4, 4, 0]} />
+                  <XAxis type="number" domain={[0, 100]} stroke="oklch(0.44 0.04 260)" />
+                  <YAxis dataKey="country" type="category" width={110} stroke="oklch(0.72 0.02 260)" tick={{ fontSize: 12 }} />
+                  <Tooltip contentStyle={{ backgroundColor: 'oklch(0.14 0.03 260)', borderColor: 'oklch(0.35 0.04 260 / 0.6)', borderRadius: '8px', color: '#fff' }} />
+                  <Bar dataKey="score" fill="oklch(0.67 0.22 260)" radius={[0, 6, 6, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
         </motion.div>
       </main>
     );
@@ -268,12 +273,15 @@ export default function VisaPredictorPage() {
       <h1 className="text-3xl font-extrabold">
         Visa <span className="gradient-text">Predictor</span>
       </h1>
-      <p className="text-surface-500 mt-2">A practical eligibility estimate, not immigration advice.</p>
+      <p className="text-surface-500 mt-2">A practical eligibility estimate based on country criteria.</p>
 
       <StepProgress step={step} />
 
-      <Card className="p-6 mt-5">
-        <p className="text-xs uppercase tracking-widest text-brand-400 mb-5">Step {step} of 3</p>
+      <div className="glow-card rounded-2xl p-6 mt-6">
+        <div className="flex justify-between items-center mb-6">
+          <p className="text-xs uppercase tracking-widest text-brand-400 font-extrabold">Step {step} of 3</p>
+          <span className="text-xs text-surface-500">{step === 1 ? 'Destination & Demographics' : step === 2 ? 'Education & Experience' : 'Job Offer & Readiness'}</span>
+        </div>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -286,9 +294,11 @@ export default function VisaPredictorPage() {
             {step === 1 && (
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Destination">
-                  <select className="input-base" value={form.destination_country} onChange={(e) => patch('destination_country', e.target.value)}>
-                    {countries.map((c) => <option key={c}>{c}</option>)}
-                  </select>
+                  <div className="select-wrapper">
+                    <select value={form.destination_country} onChange={(e) => patch('destination_country', e.target.value)}>
+                      {countries.map((c) => <option key={c}>{c}</option>)}
+                    </select>
+                  </div>
                 </Field>
                 <Field label="Passport country">
                   <Input value={form.passport_country} onChange={(e) => patch('passport_country', e.target.value)} />
@@ -302,9 +312,11 @@ export default function VisaPredictorPage() {
             {step === 2 && (
               <div className="grid sm:grid-cols-2 gap-4">
                 <Field label="Education">
-                  <select className="input-base" value={form.education_level} onChange={(e) => patch('education_level', e.target.value)}>
-                    {['phd','masters','bachelors','diploma','high_school'].map((v) => <option key={v} value={v}>{v.replace('_', ' ')}</option>)}
-                  </select>
+                  <div className="select-wrapper">
+                    <select value={form.education_level} onChange={(e) => patch('education_level', e.target.value)}>
+                      {['phd','masters','bachelors','diploma','high_school'].map((v) => <option key={v} value={v}>{v.replace('_', ' ')}</option>)}
+                    </select>
+                  </div>
                 </Field>
                 <Field label="Work experience (years)">
                   <Input type="number" value={form.work_experience_years} onChange={(e) => patch('work_experience_years', Number(e.target.value))} />
@@ -313,43 +325,52 @@ export default function VisaPredictorPage() {
                   <Input type="number" step="0.5" value={form.language_score.ielts_band} onChange={(e) => patch('language_score', { ielts_band: Number(e.target.value) })} />
                 </Field>
                 <Field label="Field">
-                  <select className="input-base" value={form.field} onChange={(e) => patch('field', e.target.value)}>
-                    {['stem','healthcare','arts','business','other'].map((v) => <option key={v}>{v}</option>)}
-                  </select>
+                  <div className="select-wrapper">
+                    <select value={form.field} onChange={(e) => patch('field', e.target.value)}>
+                      {['stem','healthcare','arts','business','other'].map((v) => <option key={v} className="capitalize">{v}</option>)}
+                    </select>
+                  </div>
                 </Field>
               </div>
             )}
 
             {step === 3 && (
-              <div className="space-y-4">
-                <label className="flex gap-2 items-center">
+              <div className="space-y-5">
+                <label className="checkbox-container">
                   <input type="checkbox" checked={form.has_job_offer} onChange={(e) => patch('has_job_offer', e.target.checked)} />
-                  I have a qualifying job offer
+                  <span className="checkbox-checkmark" />
+                  <span className="font-semibold">I have a qualifying job offer</span>
                 </label>
-                <p className="font-bold">Documents ready</p>
-                {Object.keys(form.documents).map((key) => (
-                  <label className="flex gap-2 items-center capitalize" key={key}>
-                    <input type="checkbox" checked={form.documents[key]} onChange={(e) => patch('documents', { ...form.documents, [key]: e.target.checked })} />
-                    {key.replace('_', ' ')}
-                  </label>
-                ))}
+
+                <div className="pt-3 border-t border-surface-700/40">
+                  <p className="font-bold text-sm text-surface-300 mb-3">Documents ready</p>
+                  <div className="space-y-3">
+                    {Object.keys(form.documents).map((key) => (
+                      <label className="checkbox-container capitalize" key={key}>
+                        <input type="checkbox" checked={form.documents[key]} onChange={(e) => patch('documents', { ...form.documents, [key]: e.target.checked })} />
+                        <span className="checkbox-checkmark" />
+                        <span>{key.replace('_', ' ')}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex justify-between mt-7">
+        <div className="flex justify-between mt-8 pt-5 border-t border-surface-700/40">
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
             <Button variant="ghost" disabled={step === 1} onClick={() => setStep((s) => s - 1)}>Back</Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
             {step < 3
               ? <Button onClick={() => setStep((s) => s + 1)}>Continue</Button>
-              : <Button onClick={submit} disabled={loading}>{loading ? 'Calculating…' : 'See my outlook'}</Button>
+              : <Button onClick={submit} disabled={loading} className="shadow-md">{loading ? 'Calculating…' : 'See my outlook'}</Button>
             }
           </motion.div>
         </div>
-      </Card>
+      </div>
     </main>
   );
 }

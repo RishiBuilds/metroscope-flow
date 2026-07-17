@@ -68,56 +68,63 @@ export default function VisaTimelinePage() {
         Your saved, step-by-step relocation roadmap.
       </p>
 
-      <div className="mt-8 space-y-4">
+      <div className="mt-8 space-y-5">
         {timeline.phases.map((phase, index) => (
-          <Card
+          <div
             key={phase.id}
-            className="p-5 border-l-4 border-l-brand-400"
+            className="glow-card rounded-2xl p-6 border-l-4 border-l-brand-400"
           >
-            <div className="flex justify-between gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <span className="text-brand-400 font-extrabold">
-                  {String(index + 1).padStart(2, "0")}
+                <span className="text-brand-400 font-extrabold text-sm tracking-wider uppercase">
+                  Phase {String(index + 1).padStart(2, "0")}
                 </span>
 
-                <h2 className="font-bold text-lg">
+                <h2 className="font-extrabold text-xl mt-0.5">
                   {phase.name}
                 </h2>
 
-                <p className="text-sm text-surface-500">
+                <p className="text-xs text-surface-500 mt-1">
                   Estimated: {phase.duration}
                 </p>
               </div>
 
-              <select
-                className="input-base h-10 w-32 text-xs"
-                value={phase.status}
-                onChange={(e) =>
-                  save(
-                    timeline.phases.map((p) =>
-                      p.id === phase.id
-                        ? {
-                            ...p,
-                            status: e.target.value,
-                          }
-                        : p
-                    )
-                  )
-                }
-              >
-                {["Not Started", "In Progress", "Done"].map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
+              <div className="tab-chip-group shrink-0">
+                {["Not Started", "In Progress", "Done"].map((status) => {
+                  const activeClass =
+                    phase.status === status
+                      ? status === "Not Started"
+                        ? "active-not-started"
+                        : status === "In Progress"
+                        ? "active-in-progress"
+                        : "active-done"
+                      : "";
+
+                  return (
+                    <button
+                      key={status}
+                      type="button"
+                      className={`tab-chip ${activeClass}`}
+                      onClick={() =>
+                        save(
+                          timeline.phases.map((p) =>
+                            p.id === phase.id ? { ...p, status } : p
+                          )
+                        )
+                      }
+                    >
+                      {status}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="mt-4 space-y-2">
+            <div className="mt-5 space-y-2.5 pt-4 border-t border-surface-700/40">
               {phase.substeps.map((item) => (
                 <label
                   key={item.id}
-                  className="flex items-center gap-2 text-sm"
+                  className={`checkbox-container ${item.done ? "done" : ""}`}
                 >
                   <input
                     type="checkbox"
@@ -142,12 +149,12 @@ export default function VisaTimelinePage() {
                       )
                     }
                   />
-
-                  {item.text}
+                  <span className="checkbox-checkmark" />
+                  <span>{item.text}</span>
                 </label>
               ))}
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </main>
