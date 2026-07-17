@@ -32,10 +32,15 @@ export default function CultureGuidePage() {
 
   const toast = useToast();
   const timer = useRef();
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     return () => clearInterval(timer.current);
   }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const send = async (text = message) => {
     if (!text.trim() || busy) return;
@@ -129,21 +134,24 @@ export default function CultureGuidePage() {
       <div className="glow-card rounded-2xl mt-6 p-5 sm:p-6 min-h-[360px] flex flex-col justify-between">
         <div className="space-y-4 max-h-[480px] overflow-y-auto pr-1">
           {messages.length ? (
-            messages.map((entry, i) => (
-              <div
-                key={i}
-                className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
-                  entry.role === "user"
-                    ? "ml-auto chat-bubble-user rounded-tr-xs"
-                    : "chat-bubble-assistant rounded-tl-xs"
-                }`}
-              >
-                <div className="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-70">
-                  {entry.role === "user" ? "You" : `${country} Relocation Guide`}
+            <>
+              {messages.map((entry, i) => (
+                <div
+                  key={i}
+                  className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+                    entry.role === "user"
+                      ? "ml-auto chat-bubble-user rounded-tr-xs"
+                      : "chat-bubble-assistant rounded-tl-xs"
+                  }`}
+                >
+                  <div className="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-70">
+                    {entry.role === "user" ? "You" : `${country} Relocation Guide`}
+                  </div>
+                  {entry.content || (busy && i === messages.length - 1 ? <span className="animate-pulse">Thinking…</span> : "")}
                 </div>
-                {entry.content || (busy && i === messages.length - 1 ? <span className="animate-pulse">Thinking…</span> : "")}
-              </div>
-            ))
+              ))}
+              <div ref={messagesEndRef} />
+            </>
           ) : (
             <div className="text-center py-16 text-surface-500 max-w-sm mx-auto">
               <div className="w-12 h-12 rounded-2xl bg-brand-500/10 border border-brand-500/20 text-brand-400 flex items-center justify-center mx-auto mb-3">
@@ -160,7 +168,8 @@ export default function CultureGuidePage() {
             {prompts.map((prompt) => (
               <button
                 key={prompt}
-                className="btn-ghost text-xs border border-surface-700/50 bg-surface-900/30 hover:border-brand-500/50 py-1.5 px-3 rounded-full transition-colors"
+                disabled={busy}
+                className="btn-ghost text-xs border border-surface-700/50 bg-surface-900/30 hover:border-brand-500/50 py-1.5 px-3 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => send(prompt)}
               >
                 {prompt}
@@ -174,12 +183,13 @@ export default function CultureGuidePage() {
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
               placeholder={`Ask about life in ${country}…`}
+              disabled={busy}
               className="flex-1"
             />
 
             <Button
               onClick={() => send()}
-              disabled={busy}
+              disabled={busy || !message.trim()}
               className="px-6 shadow-md"
             >
               {busy ? "Thinking…" : "Send"}

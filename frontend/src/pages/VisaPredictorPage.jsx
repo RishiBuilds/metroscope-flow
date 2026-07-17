@@ -304,7 +304,7 @@ export default function VisaPredictorPage() {
                   <Input value={form.passport_country} onChange={(e) => patch('passport_country', e.target.value)} />
                 </Field>
                 <Field label="Age">
-                  <Input type="number" value={form.age} onChange={(e) => patch('age', Number(e.target.value))} />
+                  <Input type="number" min="18" max="99" value={form.age} onChange={(e) => patch('age', Math.max(18, Math.min(99, Number(e.target.value))))} />
                 </Field>
               </div>
             )}
@@ -319,10 +319,10 @@ export default function VisaPredictorPage() {
                   </div>
                 </Field>
                 <Field label="Work experience (years)">
-                  <Input type="number" value={form.work_experience_years} onChange={(e) => patch('work_experience_years', Number(e.target.value))} />
+                  <Input type="number" min="0" max="50" value={form.work_experience_years} onChange={(e) => patch('work_experience_years', Math.max(0, Math.min(50, Number(e.target.value))))} />
                 </Field>
                 <Field label="IELTS band">
-                  <Input type="number" step="0.5" value={form.language_score.ielts_band} onChange={(e) => patch('language_score', { ielts_band: Number(e.target.value) })} />
+                  <Input type="number" min="0" max="9" step="0.5" value={form.language_score.ielts_band} onChange={(e) => patch('language_score', { ielts_band: Math.max(0, Math.min(9, Number(e.target.value))) })} />
                 </Field>
                 <Field label="Field">
                   <div className="select-wrapper">
