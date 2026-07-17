@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router';
 import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { AuthProvider } from './context/AuthContext.jsx';
@@ -10,18 +11,27 @@ import { ToastProvider } from './components/ui.jsx';
 import { EASE } from './lib/motion.js';
 
 import HomePage from './pages/HomePage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import SignupPage from './pages/SignupPage.jsx';
-import ComparePage from './pages/ComparePage.jsx';
-import SavedPage from './pages/SavedPage.jsx';
-import ProfilePage from './pages/ProfilePage.jsx';
-import NotFoundPage from './pages/NotFoundPage.jsx';
-import VisaPredictorPage from './pages/VisaPredictorPage.jsx';
-import VisaTimelinePage from './pages/VisaTimelinePage.jsx';
-import CultureGuidePage from './pages/CultureGuidePage.jsx';
-import ChecklistPage from './pages/ChecklistPage.jsx';
-import SharePage from './pages/SharePage.jsx';
-import DiscoverPage from './pages/DiscoverPage.jsx';
+
+const LoginPage = lazy(() => import('./pages/LoginPage.jsx'));
+const SignupPage = lazy(() => import('./pages/SignupPage.jsx'));
+const ComparePage = lazy(() => import('./pages/ComparePage.jsx'));
+const SavedPage = lazy(() => import('./pages/SavedPage.jsx'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage.jsx'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
+const VisaPredictorPage = lazy(() => import('./pages/VisaPredictorPage.jsx'));
+const VisaTimelinePage = lazy(() => import('./pages/VisaTimelinePage.jsx'));
+const CultureGuidePage = lazy(() => import('./pages/CultureGuidePage.jsx'));
+const ChecklistPage = lazy(() => import('./pages/ChecklistPage.jsx'));
+const SharePage = lazy(() => import('./pages/SharePage.jsx'));
+const DiscoverPage = lazy(() => import('./pages/DiscoverPage.jsx'));
+
+function PageFallback() {
+  return (
+    <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+      <div className="w-8 h-8 border-2 border-brand-400/30 border-t-brand-400 rounded-full animate-spin" />
+    </div>
+  );
+}
 
 function AnimatedOutlet() {
   const location = useLocation();
@@ -35,7 +45,9 @@ function AnimatedOutlet() {
         transition={{ duration: 0.25, ease: EASE }}
         style={{ display: 'contents' }}
       >
-        <Outlet />
+        <Suspense fallback={<PageFallback />}>
+          <Outlet />
+        </Suspense>
       </motion.div>
     </AnimatePresence>
   );
