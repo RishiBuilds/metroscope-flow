@@ -48,7 +48,8 @@ function RootLayout() {
         <ToastProvider>
         <ErrorBoundary>
           <a href="#main-content" className="skip-link">Skip to main content</a>
-          <div className="flex flex-col min-h-dvh">
+          <div className="flex flex-col min-h-dvh relative">
+            <div className="bg-mesh-glow" aria-hidden="true" />
             <Navbar />
             <div id="main-content" tabIndex={-1} className="flex flex-col flex-1 focus:outline-none">
               <AnimatedOutlet />
