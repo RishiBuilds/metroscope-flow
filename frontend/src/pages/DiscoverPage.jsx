@@ -82,7 +82,7 @@ function QuizCard({ step, answer, onSelect }) {
       className="flex flex-col gap-6"
     >
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400">
+        <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 shrink-0">
           <Icon size={20} />
         </div>
         <div>
@@ -98,11 +98,11 @@ function QuizCard({ step, answer, onSelect }) {
             <motion.button
               key={opt.value}
               onClick={() => onSelect(opt.value)}
-              className={`w-full text-left flex items-center gap-4 px-4 py-4 rounded-xl border transition-all duration-200
-                ${selected
-                  ? 'bg-brand-500/20 border-brand-500/60 text-white'
+              className={`w-full text-left flex items-center gap-4 px-5 py-4 rounded-xl border transition-all duration-200 glow-card-interactive ${
+                selected
+                  ? 'bg-brand-500/20 border-brand-500/80 text-white shadow-[0_0_20px_oklch(0.55_0.24_260_/_0.2)]'
                   : 'bg-surface-900/40 border-surface-700/40 hover:border-surface-600/60 hover:bg-surface-800/60 text-surface-300'
-                }`}
+              }`}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
@@ -114,7 +114,7 @@ function QuizCard({ step, answer, onSelect }) {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center shrink-0"
+                  className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center shrink-0 shadow-sm"
                 >
                   <svg viewBox="0 0 10 8" className="w-3 h-3 text-white fill-current">
                     <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -138,7 +138,7 @@ function MatchCard({ match, rank, cityIds }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: rank * 0.1, duration: 0.4, ease: EASE }}
-      className="glass rounded-2xl p-5 flex flex-col gap-4 border border-surface-700/40"
+      className="glow-card rounded-2xl p-5 flex flex-col gap-4"
     >
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -164,7 +164,7 @@ function MatchCard({ match, rank, cityIds }) {
           { label: 'Safety',      value: `${match.metrics.safety_score}/100` },
           { label: 'Quality',     value: `${match.metrics.quality_of_life_score}/100` },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-surface-900/40 rounded-lg px-3 py-2 text-center">
+          <div key={label} className="bg-surface-900/50 rounded-xl px-3 py-2 text-center border border-surface-700/30">
             <div className="text-xs text-surface-500">{label}</div>
             <div className="text-sm font-bold mt-0.5">{value}</div>
           </div>
@@ -175,7 +175,7 @@ function MatchCard({ match, rank, cityIds }) {
         <ul className="text-xs text-surface-400 flex flex-col gap-1">
           {match.highlights.map((h, i) => (
             <li key={i} className="flex items-center gap-1.5">
-              <span className="text-brand-400">→</span> {h}
+              <span className="text-brand-400 font-bold">→</span> {h}
             </li>
           ))}
         </ul>
@@ -183,9 +183,9 @@ function MatchCard({ match, rank, cityIds }) {
 
       <Link
         to={`/compare?ids=${match._id}`}
-        className="btn-ghost text-xs border border-surface-700/40 text-center py-2 rounded-lg hover:border-brand-500/50 transition-colors"
+        className="btn-primary text-xs py-2.5 rounded-xl justify-center shadow-md"
       >
-        <BarChart3 size={12} /> Open in Compare
+        <BarChart3 size={14} /> Open in Compare
       </Link>
     </motion.div>
   );

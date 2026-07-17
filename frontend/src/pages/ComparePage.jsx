@@ -189,7 +189,7 @@ function DecisionSummary({ cities, weights, onWeightChange, decision }) {
           const Icon = group.icon;
           const winnerNames = group.winners.map((city) => city.city).join(' · ');
           return (
-            <motion.div key={group.title} className="card p-4" variants={fadeUp}>
+            <motion.div key={group.title} className="glow-card p-4 rounded-xl" variants={fadeUp}>
               <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.14em] text-surface-500"><Icon size={14} className="text-brand-300" /> {group.title} winner</div>
               <p className="font-bold text-base mt-1 truncate" title={winnerNames}>{winnerNames}</p>
               <p className="text-[10px] text-surface-600 mt-1">{group.metrics.length} metrics · {Math.round(group.weight * 100)}% weight</p>
@@ -236,7 +236,7 @@ function isWinner(city, cities, metric) {
 function MetricGroup({ group, cities }) {
   return (
     <motion.section
-      className="card overflow-hidden"
+      className="glow-card overflow-hidden rounded-2xl"
       variants={fadeUp}
       initial="hidden"
       whileInView="visible"
@@ -252,7 +252,7 @@ function MetricGroup({ group, cities }) {
 function ChartSection({ title, subtitle, children }) {
   return (
     <motion.section
-      className="glass rounded-2xl p-5 sm:p-6"
+      className="glow-card rounded-2xl p-5 sm:p-6"
       variants={fadeUp}
       initial="hidden"
       whileInView="visible"

@@ -341,11 +341,11 @@ export default function HomePage() {
             {FEATURES.map(({ icon: Icon, title, desc, ...feat }) => (
               <RevealItem key={title}>
                 <motion.div
-                  whileHover={{ y: -4, boxShadow: '0 16px 36px oklch(0.04 0.02 260 / 0.28)' }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  className="h-full"
                 >
-                  <Link to={featureLink(feat)} className="feature-card glass h-full">
+                  <Link to={featureLink(feat)} className="feature-card glow-card h-full">
                     <div className="feature-icon-wrap">
                       <Icon size={20} className="text-brand-400" />
                     </div>
