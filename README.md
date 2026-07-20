@@ -523,7 +523,7 @@ Authenticated users unlock four AI-powered relocation modules:
 | **Culture Guide**  | `/culture-guide`  | Relocation-specific cultural guidance via Gemini AI (with static country/topic fallbacks when not configured) |
 | **Checklist**      | `/checklist`      | Country and move-type checklist with server-persisted completion state                                        |
 
-> 💡 **Tip:** Set `GEMINI_API_KEY` in `backend/.env` to enable AI-powered culture guide responses. The culture guide always works even without it, falling back to curated static content.
+> **Tip:** Set `GEMINI_API_KEY` in `backend/.env` to enable AI-powered culture guide responses. The culture guide always works even without it, falling back to curated static content.
 
 ---
 
