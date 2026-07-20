@@ -32,5 +32,22 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/recharts')) {
+              return 'recharts';
+            }
+            if (id.includes('node_modules/motion')) {
+              return 'motion';
+            }
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) {
+              return 'react-vendor';
+            }
+          },
+        },
+      },
+    },
   };
 });
