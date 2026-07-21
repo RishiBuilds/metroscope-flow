@@ -15,7 +15,7 @@ function cookieOptions(expiresIn) {
   return {
     httpOnly: true,
     secure: IS_PRODUCTION,
-    sameSite: 'Lax',
+    sameSite: IS_PRODUCTION ? 'None' : 'Lax',
     maxAge: parseDuration(expiresIn),
     path: '/',
   };

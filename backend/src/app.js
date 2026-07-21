@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/api', apiLimiter);
-
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/comparisons', comparisonRoutes);
