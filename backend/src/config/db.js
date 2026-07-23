@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
+import dns from 'node:dns';
 import { DB_SERVER_SELECTION_TIMEOUT_MS, MONGO_URI } from './env.js';
+
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+} catch {
+}
 
 mongoose.set('bufferCommands', false);
 

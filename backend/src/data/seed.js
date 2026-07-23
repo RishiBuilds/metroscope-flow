@@ -7,23 +7,25 @@ import City from '../models/City.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function seed() {
+export async function seed() {
   await connectDB();
 
   const filePath = resolve(__dirname, 'cities_seed.csv');
   const raw = await readFile(filePath, 'utf-8');
   const [header, ...rows] = raw.trim().split(/\r?\n/);
-  const fields = header.split(',');
-  const cities = rows.map((row) => {
-    const values = row.split(',');
+  const fields = header.split(',').map((f) => f.trim());
+  const cities = rows
+    .filter((row) => row.trim().length > 0)
+    .map((row) => {
+      const values = row.split(',').map((v) => v.trim());
 
-    return Object.fromEntries(
-      fields.map((field, index) => [
-        field,
-        field === 'city' || field === 'country' ? values[index] : Number(values[index]),
-      ])
-    );
-  });
+      return Object.fromEntries(
+        fields.map((field, index) => [
+          field,
+          field === 'city' || field === 'country' ? values[index] : Number(values[index]),
+        ])
+      );
+    });
 
   console.log(`Loaded ${cities.length} cities from seed file`);
 
@@ -43,7 +45,7 @@ async function seed() {
       runValidators: true,
     });
 
-    if (result.createdAt.getTime() === result.updatedAt.getTime()) {
+    if (result && result.createdAt && result.updatedAt && result.createdAt.getTime() === result.updatedAt.getTime()) {
       upserted++;
     } else {
       updated++;
@@ -61,10 +63,24 @@ async function seed() {
   console.log(`\nSample (3 cities):`);
   console.log(JSON.stringify(sample, null, 2));
 
-  process.exit(0);
+  return total;
 }
 
-seed().catch((err) => {
-  console.error('Seed failed:', err);
-  process.exit(1);
-});
+export async function seedIfNeeded() {
+  const count = await City.countDocuments();
+  if (count === 0) {
+    console.log('Database is empty (0 cities). Running auto-seed...');
+    await seed();
+  } else {
+    console.log(`Database initialized with ${count} cities.`);
+  }
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  seed()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('Seed failed:', err);
+      process.exit(1);
+    });
+}
