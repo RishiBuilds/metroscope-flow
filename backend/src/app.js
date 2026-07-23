@@ -25,17 +25,22 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
-app.use('/api', apiLimiter);
+const apiRouter = express.Router();
+apiRouter.use(apiLimiter);
+apiRouter.get('/health', (_req, res) => res.json({ status: 'ok' }));
+apiRouter.use('/health', healthRoutes);
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/comparisons', comparisonRoutes);
+apiRouter.use('/cities', cityRoutes);
+apiRouter.use('/visa', visaRoutes);
+apiRouter.use('/checklist', checklistRoutes);
+apiRouter.use('/culture', cultureRoutes);
+apiRouter.use('/exchange-rates', exchangeRatesRoutes);
+apiRouter.use('/discover', discoverRoutes);
+
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
-app.use('/api/health', healthRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/comparisons', comparisonRoutes);
-app.use('/api/cities', cityRoutes);
-app.use('/api/visa', visaRoutes);
-app.use('/api/checklist', checklistRoutes);
-app.use('/api/culture', cultureRoutes);
-app.use('/api/exchange-rates', exchangeRatesRoutes);
-app.use('/api/discover', discoverRoutes);
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

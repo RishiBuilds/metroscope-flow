@@ -1,8 +1,13 @@
 import axios from 'axios';
 
-const apiUrl = import.meta.env.VITE_API_URL;
+let apiUrl = import.meta.env.VITE_API_URL;
 if (!apiUrl) {
   throw new Error('Missing required frontend environment variable: VITE_API_URL');
+}
+
+apiUrl = apiUrl.replace(/\/+$/, '');
+if (!apiUrl.endsWith('/api')) {
+  apiUrl = `${apiUrl}/api`;
 }
 
 const client = axios.create({
