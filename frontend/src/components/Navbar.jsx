@@ -173,10 +173,12 @@ export default function Navbar() {
         <Link
           to="/"
           aria-label="MetroScope Flow — home"
-          className="nav-brand flex items-center gap-2 font-bold text-lg tracking-tight shrink-0"
+          className="nav-brand flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0 group"
           onClick={() => setMenuOpen(false)}
         >
-          <Globe2 size={22} className="text-brand-400" aria-hidden="true" />
+          <span className="nav-brand-icon">
+            <Globe2 size={22} className="text-brand-400" aria-hidden="true" />
+          </span>
           <span className="gradient-text">MetroScope Flow</span>
         </Link>
 
