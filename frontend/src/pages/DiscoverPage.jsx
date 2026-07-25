@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router';
 import {
@@ -6,9 +6,9 @@ import {
   WalletCards, ShieldCheck, HeartPulse, Leaf, Globe2,
   Loader2, AlertCircle, Trophy, MapPin,
 } from '../components/icons.jsx';
+import PageHeader from '../components/PageHeader.jsx';
 import { discoverCities } from '../api/discover.js';
-
-const EASE = [0.22, 0.61, 0.36, 1];
+import { EASE, fadeUp } from '../lib/motion.js';
 
 const STEPS = [
   {
@@ -79,7 +79,7 @@ function QuizCard({ step, answer, onSelect }) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -30 }}
       transition={{ duration: 0.32, ease: EASE }}
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-4"
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-brand-500/15 border border-brand-500/30 flex items-center justify-center text-brand-400 shrink-0">
@@ -98,7 +98,7 @@ function QuizCard({ step, answer, onSelect }) {
             <motion.button
               key={opt.value}
               onClick={() => onSelect(opt.value)}
-              className={`w-full text-left flex items-center gap-4 px-5 py-4 rounded-xl border transition-all duration-200 glow-card-interactive ${
+              className={`w-full text-left flex items-center gap-4 px-4 py-3 rounded-xl border transition-all duration-200 glow-card-interactive ${
                 selected
                   ? 'bg-brand-500/20 border-brand-500/80 text-white shadow-[0_0_20px_oklch(0.55_0.24_260_/_0.2)]'
                   : 'bg-surface-900/40 border-surface-700/40 hover:border-surface-600/60 hover:bg-surface-800/60 text-surface-300'
@@ -166,7 +166,7 @@ function MatchCard({ match, rank, cityIds }) {
         ].map(({ label, value }) => (
           <div key={label} className="bg-surface-900/50 rounded-xl px-3 py-2 text-center border border-surface-700/30">
             <div className="text-xs text-surface-500">{label}</div>
-            <div className="text-sm font-bold mt-0.5">{value}</div>
+            <div className="text-sm font-bold mt-0.5 font-mono tabular-nums">{value}</div>
           </div>
         ))}
       </div>
@@ -203,6 +203,8 @@ export default function DiscoverPage() {
   const progress = ((stepIndex) / STEPS.length) * 100;
   const isLast = stepIndex === STEPS.length - 1;
 
+  useEffect(() => { document.title = 'Discover Your City - MetroScope Flow'; }, []);
+
   function selectAnswer(value) {
     setAnswers((prev) => ({ ...prev, [currentStep.id]: value }));
   }
@@ -237,27 +239,18 @@ export default function DiscoverPage() {
   }
 
   return (
-    <main className="flex-1 px-4 sm:px-6 py-8 max-w-2xl mx-auto w-full">
-      <motion.div
-        className="mb-8 text-center"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/15 border border-brand-500/30 text-brand-400 text-xs font-semibold uppercase tracking-widest mb-4">
-          <Sparkles size={12} /> Find Your City
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
-          Discover Your Perfect City
-        </h1>
-        <p className="text-surface-500 text-sm mt-2 max-w-lg mx-auto">
-          Answer 5 quick questions and we'll match you with the best cities for your lifestyle.
-        </p>
-      </motion.div>
+    <main className="flex-1 px-4 sm:px-6 py-3 max-w-2xl mx-auto w-full">
+      <PageHeader
+        className="text-center [&_.page-header-desc]:mx-auto"
+        eyebrow="Find Your City"
+        title="Discover Your"
+        titleAccent="Perfect City"
+        description="Answer 5 quick questions and we'll match you with the best cities for your lifestyle."
+      />
 
       {!results ? (
-        <div className="glass rounded-2xl p-6 sm:p-8">
-          <div className="mb-6">
+        <div className="glass rounded-2xl p-5 sm:p-6">
+          <div className="mb-4">
             <div className="flex items-center justify-between text-xs text-surface-600 mb-2">
               <span>Question {stepIndex + 1} of {STEPS.length}</span>
               <span>{Math.round(progress)}% complete</span>
@@ -341,7 +334,7 @@ export default function DiscoverPage() {
           ))}
 
           <div className="flex items-center justify-center gap-3 mt-2">
-            <button onClick={handleReset} className="btn-ghost text-sm border border-surface-700/60 py-2 px-5">
+            <button onClick={handleReset} className="btn-secondary text-sm py-2 px-5">
               ← Retake Quiz
             </button>
             <Link to="/compare" className="btn-primary text-sm py-2 px-5">
