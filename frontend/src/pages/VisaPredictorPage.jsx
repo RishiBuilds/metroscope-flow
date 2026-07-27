@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { Button, Input, Card, Badge, useToast } from '../components/ui.jsx';
 import { predictVisa, saveVisaResult } from '../api/tools.js';
 import { EASE, fadeUp, staggerContainer, SPRING_POP } from '../lib/motion.js';
+import { useEffect as useEffectOnce } from 'react';
 
 const countries = [
   'Canada', 'Germany', 'Australia', 'United Kingdom', 'United States',
@@ -118,7 +119,7 @@ function ScoreGauge({ score, label, confidence }) {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ ...SPRING_POP, delay: 0.5 }}
       >
-        <Badge className="mt-1 bg-brand-500/20 border-brand-500/40 text-brand-400 font-bold">{confidence} confidence</Badge>
+        <Badge className="mt-1 badge-accent">{confidence} confidence</Badge>
       </motion.div>
 
       <h2 className="text-xl font-extrabold text-center mt-1">{label}</h2>
@@ -186,6 +187,7 @@ export default function VisaPredictorPage() {
   if (result) {
     return (
       <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-10">
+        {(() => { document.title = 'Visa Outlook - MetroScope Flow'; return null; })()}
         <motion.h1
           className="text-3xl font-extrabold mb-6"
           initial={{ opacity: 0, y: 12 }}
@@ -237,7 +239,7 @@ export default function VisaPredictorPage() {
                     {saved ? 'Saved to Profile' : 'Save this result'}
                   </Button>
                 </motion.div>
-                <Link className="btn-ghost border border-surface-700/60 rounded-xl px-4 text-xs font-semibold" to="/visa-timeline">
+                <Link className="btn-secondary" to="/visa-timeline">
                   View your Visa Timeline →
                 </Link>
               </div>
@@ -250,7 +252,8 @@ export default function VisaPredictorPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.45, ease: EASE }}
         >
-          <div className="glow-card rounded-2xl p-6 mt-6">
+          <div className="glow-card rounded-2xl p-5 sm:p-6 mt-8">
+            <p className="text-xs uppercase tracking-[0.14em] font-semibold text-brand-300 mb-3 flex items-center gap-1.5">📊 Country comparison</p>
             <h2 className="font-extrabold text-lg mb-4">Destination competitiveness</h2>
             <div className="h-72">
               <ResponsiveContainer>

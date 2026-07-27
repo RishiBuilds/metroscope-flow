@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { motion } from "motion/react";
 import { Card, Button, useToast } from "../components/ui.jsx";
 import { getVisaTimeline, updateVisaTimeline } from "../api/tools.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { Clock, ShieldCheck, Loader2 } from "../components/icons.jsx";
+import { fadeUp, staggerContainer, EASE } from "../lib/motion.js";
 
 export default function VisaTimelinePage() {
   const [timeline, setTimeline] = useState(undefined);
   const { user } = useAuth();
   const toast = useToast();
+
+  useEffect(() => {
+    document.title = 'Visa Timeline - MetroScope Flow';
+  }, []);
 
   useEffect(() => {
     getVisaTimeline()
@@ -30,49 +37,73 @@ export default function VisaTimelinePage() {
 
   if (timeline === undefined) {
     return (
-      <main className="p-10 text-center">
-        Loading your roadmap…
+      <main className="flex-1 flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={28} className="text-brand-400 animate-spin" />
+          <p className="text-surface-400 text-sm animate-pulse-soft">Loading your roadmap…</p>
+        </div>
       </main>
     );
   }
 
   if (!timeline) {
     return (
-      <main className="max-w-xl mx-auto p-10 text-center">
-        <h1 className="text-3xl font-extrabold">
-          Your Visa Timeline
-        </h1>
-
-        <p className="text-surface-500 mt-4">
-          Save a Visa Predictor result first, then we'll build your
-          personal relocation roadmap.
-        </p>
-
-        <Link
-          className="btn-primary mt-6"
-          to="/visa-predictor"
-        >
-          Complete Visa Predictor
-        </Link>
+      <main className="max-w-xl mx-auto w-full px-4 sm:px-6 py-10">
+        <div className="empty-state">
+          <div className="empty-state-icon">
+            <Clock size={28} className="text-brand-500" />
+          </div>
+          <div>
+            <h1 className="text-xl font-extrabold mb-2">Your Visa Timeline</h1>
+            <p className="text-sm text-surface-600 max-w-xs mx-auto">
+              Save a Visa Predictor result first, then we'll build your
+              personal relocation roadmap.
+            </p>
+          </div>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              className="btn-primary px-6 py-2.5"
+              to="/visa-predictor"
+            >
+              <ShieldCheck size={16} /> Complete Visa Predictor
+            </Link>
+          </motion.div>
+        </div>
       </main>
     );
   }
 
   return (
     <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
-      <h1 className="text-3xl font-extrabold">
+      <motion.h1
+        className="text-3xl font-extrabold"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+      >
         Visa <span className="gradient-text">Timeline</span>
-      </h1>
+      </motion.h1>
 
-      <p className="text-surface-500 mt-2">
+      <motion.p
+        className="text-surface-500 mt-2"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1, ease: EASE }}
+      >
         Your saved, step-by-step relocation roadmap.
-      </p>
+      </motion.p>
 
-      <div className="mt-8 space-y-5">
+      <motion.div
+        className="mt-8 space-y-5"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
         {timeline.phases.map((phase, index) => (
-          <div
+          <motion.div
             key={phase.id}
-            className="glow-card rounded-2xl p-6 border-l-4 border-l-brand-400"
+            className="glow-card rounded-2xl p-5 sm:p-6 border-l-4 border-l-brand-400"
+            variants={fadeUp}
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
@@ -154,9 +185,9 @@ export default function VisaTimelinePage() {
                 </label>
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </main>
   );
 }

@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Bookmark, LogIn, AlertCircle, Trophy, TableProperties, ChartNoAxesCombined, Sparkles, WalletCards, HeartPulse, Leaf, ShieldCheck } from '../components/icons.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCurrency } from '../context/CurrencyContext.jsx';
-import { compareCities } from '../api/cities.js';
+import { compareCities, searchCities } from '../api/cities.js';
+import PageHeader from '../components/PageHeader.jsx';
 import CityPicker from '../components/CityPicker.jsx';
 import SaveModal from '../components/SaveModal.jsx';
 import Skeleton from '../components/Skeleton.jsx';
@@ -55,7 +56,7 @@ const SUMMARY_METRICS = [
   { label: 'Quality of Life',     key: 'quality_of_life_score',    format: (v) => `${v}/100` },
   { label: 'Healthcare',          key: 'healthcare_score',         format: (v) => `${v}/100` },
   { label: 'Safety',              key: 'safety_score',             format: (v) => `${v}/100` },
-  { label: 'Pollution (Lower is better)', key: 'pollution_score', format: (v) => `${v}/100` },
+  { label: 'Pollution (Lower is better)', key: 'pollution_score',  format: (v) => `${v}/100` },
 ];
 
 const METRIC_GROUPS = [
@@ -289,6 +290,13 @@ export default function ComparePage() {
     localStorage.setItem('metroscope_weights', JSON.stringify(weights));
   }, [weights]);
 
+  useEffect(() => {
+    const names = selected.map((c) => c.city).filter(Boolean);
+    document.title = names.length >= 2
+      ? `${names.join(' vs ')} \u2014 MetroScope Flow`
+      : 'City Comparison \u2014 MetroScope Flow';
+  }, [selected]);
+
   const normalizeCities = (cities) => cities.map((city) => ({
     ...city,
     quality_of_life_score: Math.min(100, Math.round((Number(city.quality_of_life_score) || 0) / 2.2)),
@@ -320,22 +328,40 @@ export default function ComparePage() {
 
   useEffect(() => {
     const idsParam = searchParams.get('ids');
-    if (!idsParam) return;
-    const ids = idsParam.split(',').filter(Boolean);
-    if (ids.length < 2) return;
+    const namesParam = searchParams.get('names');
+    if (!idsParam && !namesParam) return;
 
+    let cancelled = false;
     setLoading(true);
     setError('');
-    compareCities(ids)
-      .then((res) => {
-        const cities = res.data.data ?? [];
-        const normalized = normalizeCities(cities);
-        setSelected(cities.map(({ _id, city, country }) => ({ _id, city, country })));
-        setCityData(normalized);
-        cityDataIdsRef.current = normalized.map((c) => c._id).sort().join(',');
-      })
-      .catch(() => setError('Could not load comparison data. Please try again.'))
-      .finally(() => setLoading(false));
+
+    const loadByIds = (ids) =>
+      compareCities(ids)
+        .then((res) => {
+          const cities = res.data.data ?? [];
+          const normalized = normalizeCities(cities);
+          setSelected(cities.map(({ _id, city, country }) => ({ _id, city, country })));
+          setCityData(normalized);
+          cityDataIdsRef.current = normalized.map((c) => c._id).sort().join(',');
+        });
+
+    const loadByNames = (names) =>
+      Promise.all(names.map((name) => searchCities(name).then((res) => res.data.data?.[0])))
+        .then((results) => {
+          const cities = results.filter(Boolean);
+          if (cities.length < 2) throw new Error('Not enough cities found');
+          return loadByIds(cities.map((c) => c._id));
+        });
+
+    const task = idsParam
+      ? loadByIds(idsParam.split(',').filter(Boolean))
+      : loadByNames(namesParam.split(',').map((n) => n.trim()).filter(Boolean));
+
+    task
+      .catch(() => { if (!cancelled) setError('Could not load comparison data. Please try again.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
   }, [searchParams]);
 
   useEffect(() => {
@@ -360,7 +386,7 @@ export default function ComparePage() {
       })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [selected]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selected]);
 
   const summaryMetrics = [
     { label: 'Monthly Rent',        key: 'avg_monthly_rent_usd',     format: (v) => formatCurrency(v) },
@@ -396,19 +422,17 @@ export default function ComparePage() {
   const defaultSaveName = selected.map((c) => c.city).join(' vs ');
 
   return (
-    <main className="flex-1 px-4 sm:px-6 py-8 max-w-5xl mx-auto w-full">
+    <main className="flex-1 px-4 sm:px-6 py-10 max-w-5xl mx-auto w-full">
       <ScrollProgress />
 
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-1">
-          City <span className="gradient-text">Comparison</span>
-        </h1>
-        <p className="text-sm text-surface-600">
-          Search and select 2–4 cities to compare across 9 key metrics.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Compare"
+        title="City"
+        titleAccent="Comparison"
+        description="Search and select 2–4 cities to compare across 9 key metrics with charts, winner highlights, and a decision score."
+      />
 
-      <div className="glass rounded-2xl p-5 mb-6">
+      <div className="glass rounded-2xl p-5 sm:p-6 mb-6">
         <CityPicker selected={selected} onChange={setSelected} />
       </div>
 
@@ -522,9 +546,9 @@ export default function ComparePage() {
                       <tr className="border-b border-surface-700/40">
                         <th className="text-left px-5 py-3 text-surface-600 font-medium w-40 shrink-0">Metric</th>
                         {cityData.map((c, i) => (
-                          <th key={c._id} className="px-4 py-3 text-center font-semibold" style={{ color: CITY_COLORS[i % CITY_COLORS.length] }}>
-                            {c.city}<br />
-                            <span className="text-xs font-normal text-surface-600">{c.country}</span>
+                          <th key={c._id} className="px-4 py-3 text-center font-semibold max-w-[10rem]" style={{ color: CITY_COLORS[i % CITY_COLORS.length] }}>
+                            <span className="block truncate" title={c.city}>{c.city}</span>
+                            <span className="text-xs font-normal text-surface-600 block truncate" title={c.country}>{c.country}</span>
                           </th>
                         ))}
                       </tr>
@@ -534,7 +558,7 @@ export default function ComparePage() {
                         <tr key={key} className={ri % 2 === 0 ? 'bg-surface-900/20' : ''}>
                           <td className="px-5 py-2.5 text-surface-400 font-medium whitespace-nowrap">{label}</td>
                           {cityData.map((c) => (
-                            <td key={c._id} className="px-4 py-2.5 text-center font-mono text-sm">
+                            <td key={c._id} className="px-4 py-2.5 text-center font-mono text-sm tabular-nums">
                               {format(c[key])}
                             </td>
                           ))}

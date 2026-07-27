@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Button, Card, useToast } from '../components/ui.jsx';
 import { generateChecklist, getChecklist, toggleChecklistItem } from '../api/tools.js';
 import { fadeUp, staggerContainer, EASE } from '../lib/motion.js';
+import Skeleton from '../components/Skeleton.jsx';
+import { CheckListIcon2 } from '../components/icons.jsx';
 
 const countries = [
   'Canada', 'Germany', 'Australia', 'United Kingdom', 'United States',
@@ -11,14 +13,20 @@ const countries = [
 
 export default function ChecklistPage() {
   const [list,     setList]     = useState(undefined);
+  const [loading,  setLoading]  = useState(true);
   const [country,  setCountry]  = useState('Canada');
   const [moveType, setMoveType] = useState('work');
   const toast = useToast();
 
   useEffect(() => {
+    document.title = 'Relocation Checklist - MetroScope Flow';
+  }, []);
+
+  useEffect(() => {
     getChecklist()
       .then((r) => setList(r.data.data))
-      .catch(() => setList(null));
+      .catch(() => setList(null))
+      .finally(() => setLoading(false));
   }, []);
 
   const groups = useMemo(
@@ -92,8 +100,27 @@ export default function ChecklistPage() {
         </div>
       </motion.div>
 
+      {loading && (
+        <div className="flex flex-col gap-4 mt-8" aria-live="polite" aria-busy="true">
+          <Skeleton.Card lines={3} />
+          <Skeleton.Card lines={3} />
+        </div>
+      )}
+
+      {!loading && !list && (
+        <div className="flex flex-col items-center text-center py-16 gap-4 text-surface-600 mt-4">
+          <div className="empty-state-icon">
+            <CheckListIcon2 size={28} className="text-brand-500" />
+          </div>
+          <div>
+            <p className="font-semibold text-surface-300 mb-1">No checklist generated yet</p>
+            <p className="text-xs max-w-xs mx-auto">Choose a destination country and move type above, then generate your personalised checklist.</p>
+          </div>
+        </div>
+      )}
+
       <AnimatePresence>
-        {list && (
+        {!loading && list && (
           <motion.div
             key="checklist-content"
             initial={{ opacity: 0, y: 16 }}
@@ -129,7 +156,7 @@ export default function ChecklistPage() {
                         {items.filter((i) => i.done).length}/{items.length}
                       </span>
                     </div>
-                    <div className="mt-4 space-y-3">
+                    <div className="mt-4 space-y-3 max-h-[480px] overflow-y-auto pr-1">
                       {items.map((item) => (
                         <motion.label
                           key={item.id}
