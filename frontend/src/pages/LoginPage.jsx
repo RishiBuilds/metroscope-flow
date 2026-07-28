@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { LogIn, Eye, EyeOff, AlertCircle, Globe2 } from '../components/icons.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -14,6 +14,10 @@ export default function LoginPage() {
   const [apiError, setApiError] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Login - MetroScope Flow';
+  }, []);
 
   const validate = () => {
     const e = {};
@@ -56,7 +60,7 @@ export default function LoginPage() {
             <div className="w-11 h-11 rounded-2xl bg-brand-900/60 flex items-center justify-center mb-1">
               <Globe2 size={24} className="text-brand-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight">Welcome back</h1>
             <p className="text-sm text-surface-600">Sign in to your MetroScope Flow account</p>
           </div>
 

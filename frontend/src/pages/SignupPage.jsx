@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { UserPlus, Eye, EyeOff, AlertCircle, CheckCircle2, Globe2 } from '../components/icons.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -12,6 +12,10 @@ export default function SignupPage() {
   const [apiError, setApiError] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = 'Sign Up - MetroScope Flow';
+  }, []);
 
   const pwStrength = (() => {
     const p = form.password;
@@ -72,7 +76,7 @@ export default function SignupPage() {
             <div className="w-11 h-11 rounded-2xl bg-brand-900/60 flex items-center justify-center mb-1">
               <Globe2 size={24} className="text-brand-400" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight">Create your account</h1>
           </div>
 
           {apiError && (
@@ -143,7 +147,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw((s) => !s)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-600 hover:text-surface-400 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-600 hover:text-surface-400 transition-colors p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                   aria-label={showPw ? 'Hide password' : 'Show password'}
                 >
                   {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
