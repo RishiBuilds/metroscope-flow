@@ -321,6 +321,10 @@ export default function SavedPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState('');
 
+  useEffect(() => {
+    document.title = 'Saved Comparisons - MetroScope Flow';
+  }, []);
+
   const fetchComps = useCallback(() => {
     setLoading(true);
     setError('');

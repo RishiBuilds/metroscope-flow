@@ -34,6 +34,10 @@ export default function ProfilePage() {
   }, []);
   useEffect(() => { listVisaResults().then((res) => setVisaResults(res.data.data || [])).catch(() => setVisaResults([])); }, []);
 
+  useEffect(() => {
+    document.title = 'Your Profile - MetroScope Flow';
+  }, []);
+
   const handleLogout = async () => {
     await logout();
     navigate('/');
@@ -83,7 +87,7 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-3">
         <div className="glass rounded-2xl p-5">
           <div className="flex items-center justify-between"><h2 className="font-bold">Past Visa Predictions</h2><Link to="/visa-predictor" className="text-sm text-brand-400">New prediction</Link></div>
-          {visaResults.length ? <div className="mt-3 space-y-2">{visaResults.slice(0, 3).map((entry) => <div key={entry._id} className="flex justify-between text-sm border-t border-surface-700/50 pt-2"><span>{entry.inputs?.destination_country}</span><span className="text-brand-400 font-bold">{entry.result?.score}/100</span></div>)}</div> : <p className="text-sm text-surface-600 mt-2">No saved predictions yet.</p>}
+          {visaResults.length ? <div className="mt-3 space-y-2">{visaResults.slice(0, 3).map((entry) => <div key={entry._id} className="flex justify-between text-sm border-t border-surface-700/50 pt-2"><span>{entry.inputs?.destination_country}</span><span className="text-brand-400 font-bold font-mono tabular-nums">{entry.result?.score}/100</span></div>)}</div> : <p className="text-sm text-surface-600 mt-2">No saved predictions yet.</p>}
           <Link to="/checklist" className="inline-block mt-4 text-sm text-brand-400">View active relocation checklist →</Link>
         </div>
         <Link
