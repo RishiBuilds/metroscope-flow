@@ -1,7 +1,12 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { MapPin, ArrowLeft } from '../components/icons.jsx';
 
 export default function NotFoundPage() {
+  useEffect(() => {
+    document.title = 'Page Not Found - MetroScope Flow';
+  }, []);
+
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-4 py-24 text-center">
       <div className="animate-fade-up flex flex-col items-center gap-6 max-w-sm">
