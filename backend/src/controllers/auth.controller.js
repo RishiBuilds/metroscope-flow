@@ -17,7 +17,8 @@ export async function login(req, res) {
 }
 
 export async function logout(_req, res) {
-  res.clearCookie(COOKIE_NAME, cookieOptions(JWT_EXPIRES_IN));
+  const { maxAge: _, ...clearOpts } = cookieOptions(JWT_EXPIRES_IN);
+  res.clearCookie(COOKIE_NAME, clearOpts);
   res.json({ data: { message: 'Logged out successfully.' } });
 }
 
