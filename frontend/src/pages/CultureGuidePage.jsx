@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { motion } from "motion/react";
 import { Button, Card, Input, useToast } from "../components/ui.jsx";
 import { cultureChat } from "../api/tools.js";
+import { EASE, fadeUp } from "../lib/motion.js";
 
 const countries = [
   "Canada",
@@ -37,6 +39,10 @@ export default function CultureGuidePage() {
   useEffect(() => {
     return () => clearInterval(timer.current);
   }, []);
+
+  useEffect(() => {
+    document.title = `Culture Guide: ${country} — MetroScope Flow`;
+  }, [country]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,9 +106,14 @@ export default function CultureGuidePage() {
 
   return (
     <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
-      <h1 className="text-3xl font-extrabold">
+      <motion.h1
+        className="text-3xl font-extrabold"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: EASE }}
+      >
         Culture <span className="gradient-text">Guide</span>
-      </h1>
+      </motion.h1>
 
       <div className="flex flex-wrap items-center gap-3 mt-5">
         <div className="select-wrapper max-w-56">
@@ -124,21 +135,26 @@ export default function CultureGuidePage() {
         </div>
 
         <Link
-          className="btn-ghost border border-surface-700/60 rounded-xl px-4 text-xs font-semibold"
+          className="btn-secondary"
           to="/compare"
         >
           Compare {country} cities →
         </Link>
       </div>
 
-      <div className="glow-card rounded-2xl mt-6 p-5 sm:p-6 min-h-[360px] flex flex-col justify-between">
+      <motion.div
+        className="glow-card rounded-2xl mt-6 p-5 sm:p-6 min-h-[360px] flex flex-col justify-between"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15, ease: EASE }}
+      >
         <div className="space-y-4 max-h-[480px] overflow-y-auto pr-1">
           {messages.length ? (
             <>
               {messages.map((entry, i) => (
                 <div
                   key={i}
-                  className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+                  className={`chat-bubble ${
                     entry.role === "user"
                       ? "ml-auto chat-bubble-user rounded-tr-xs"
                       : "chat-bubble-assistant rounded-tl-xs"
@@ -196,7 +212,7 @@ export default function CultureGuidePage() {
             </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }
