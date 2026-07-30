@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { protect } from '../middleware/auth.middleware.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
 import {
   saveComparison,
   listComparisons,
@@ -12,13 +13,13 @@ import {
 
 const router = Router();
 
-router.get('/share/:token', getSharedComparison);
+router.get('/share/:token', asyncHandler(getSharedComparison));
 router.use(protect);
-router.post('/', saveComparison);
-router.get('/', listComparisons);
-router.get('/:id', getComparison);
-router.delete('/:id', deleteComparison);
-router.patch('/:id/notes', updateNotes);
-router.post('/:id/share', shareComparison);
+router.post('/', asyncHandler(saveComparison));
+router.get('/', asyncHandler(listComparisons));
+router.get('/:id', asyncHandler(getComparison));
+router.delete('/:id', asyncHandler(deleteComparison));
+router.patch('/:id/notes', asyncHandler(updateNotes));
+router.post('/:id/share', asyncHandler(shareComparison));
 
 export default router;
