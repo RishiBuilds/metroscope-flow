@@ -47,6 +47,11 @@ export default function SharePage() {
       .finally(() => setLoading(false));
   }, [token]);
 
+  useEffect(() => {
+    if (meta?.name) document.title = `${meta.name} — MetroScope Flow`;
+    else document.title = 'Shared Comparison — MetroScope Flow';
+  }, [meta]);
+
   if (loading) {
     return (
       <main className="flex-1 flex items-center justify-center py-24">
@@ -112,9 +117,9 @@ export default function SharePage() {
               <tr className="border-b border-surface-700/40">
                 <th className="text-left px-5 py-4 text-surface-600 font-medium w-40">Metric</th>
                 {cities.map((c, i) => (
-                  <th key={c._id} className="px-4 py-4 text-center font-semibold" style={{ color: CITY_COLORS[i % CITY_COLORS.length] }}>
-                    {c.city}<br />
-                    <span className="text-xs font-normal text-surface-600">{c.country}</span>
+                  <th key={c._id} className="px-4 py-4 text-center font-semibold max-w-[10rem]" style={{ color: CITY_COLORS[i % CITY_COLORS.length] }}>
+                    <span className="block truncate" title={c.city}>{c.city}</span>
+                    <span className="text-xs font-normal text-surface-600 block truncate" title={c.country}>{c.country}</span>
                   </th>
                 ))}
               </tr>
@@ -128,7 +133,7 @@ export default function SharePage() {
                 >
                   <td className="px-5 py-3 text-surface-400 font-medium whitespace-nowrap">{label}</td>
                   {cities.map((c) => (
-                    <td key={c._id} className="px-4 py-3 text-center font-mono">
+                    <td key={c._id} className="px-4 py-3 text-center font-mono tabular-nums">
                       {format(c[key])}
                     </td>
                   ))}
