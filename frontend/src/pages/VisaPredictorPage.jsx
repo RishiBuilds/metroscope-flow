@@ -5,7 +5,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { Button, Input, Card, Badge, useToast } from '../components/ui.jsx';
 import { predictVisa, saveVisaResult } from '../api/tools.js';
 import { EASE, fadeUp, staggerContainer, SPRING_POP } from '../lib/motion.js';
-import { useEffect as useEffectOnce } from 'react';
 
 const countries = [
   'Canada', 'Germany', 'Australia', 'United Kingdom', 'United States',
@@ -161,6 +160,12 @@ export default function VisaPredictorPage() {
   const [saved,   setSaved]   = useState(false);
   const toast = useToast();
 
+  useEffect(() => {
+    document.title = result
+      ? 'Visa Outlook - MetroScope Flow'
+      : 'Visa Predictor - MetroScope Flow';
+  }, [result]);
+
   const patch = (key, value) => setForm((f) => ({ ...f, [key]: value }));
 
   const submit = async () => {
@@ -187,7 +192,6 @@ export default function VisaPredictorPage() {
   if (result) {
     return (
       <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-10">
-        {(() => { document.title = 'Visa Outlook - MetroScope Flow'; return null; })()}
         <motion.h1
           className="text-3xl font-extrabold mb-6"
           initial={{ opacity: 0, y: 12 }}
@@ -317,7 +321,7 @@ export default function VisaPredictorPage() {
                 <Field label="Education">
                   <div className="select-wrapper">
                     <select value={form.education_level} onChange={(e) => patch('education_level', e.target.value)}>
-                      {['phd','masters','bachelors','diploma','high_school'].map((v) => <option key={v} value={v}>{v.replace('_', ' ')}</option>)}
+                      {['phd','masters','bachelors','diploma','high_school'].map((v) => <option key={v} value={v}>{v.replaceAll('_', ' ')}</option>)}
                     </select>
                   </div>
                 </Field>
@@ -352,7 +356,7 @@ export default function VisaPredictorPage() {
                       <label className="checkbox-container capitalize" key={key}>
                         <input type="checkbox" checked={form.documents[key]} onChange={(e) => patch('documents', { ...form.documents, [key]: e.target.checked })} />
                         <span className="checkbox-checkmark" />
-                        <span>{key.replace('_', ' ')}</span>
+                        <span>{key.replaceAll('_', ' ')}</span>
                       </label>
                     ))}
                   </div>
