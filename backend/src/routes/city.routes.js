@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { asyncHandler } from '../utils/asyncHandler.js';
 import {
   getCities,
   getCityById,
@@ -8,9 +9,9 @@ import {
 
 const router = Router();
 
-router.get('/compare', compareCities);
-router.get('/search', searchCities);
-router.get('/', getCities);
-router.get('/:id', getCityById);
+router.get('/compare', asyncHandler(compareCities));
+router.get('/search', asyncHandler(searchCities));
+router.get('/', asyncHandler(getCities));
+router.get('/:id', asyncHandler(getCityById));
 
 export default router;
