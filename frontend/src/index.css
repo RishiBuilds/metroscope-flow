@@ -1402,3 +1402,18 @@ input[type="range"].weight-slider::-moz-range-thumb {
   .scroll-indicator { animation: none; }
   .popular-marquee { animation: none; }
 }
+
+.pdf-export-mode {
+  width: 1060px !important;
+  max-width: 1060px !important;
+  overflow: visible !important;
+}
+.pdf-export-mode * {
+  animation: none !important;
+  transition: none !important;
+}
+.pdf-export-mode .scroll-progress-bar,
+.pdf-export-mode .skip-link,
+.pdf-export-mode .export-controls {
+  display: none !important;
+}

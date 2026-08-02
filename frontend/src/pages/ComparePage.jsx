@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bookmark, LogIn, AlertCircle, Trophy, TableProperties, ChartNoAxesCombined, Sparkles, WalletCards, HeartPulse, Leaf, ShieldCheck } from '../components/icons.jsx';
+import { Bookmark, LogIn, AlertCircle, Trophy, TableProperties, ChartNoAxesCombined, Sparkles, WalletCards, HeartPulse, Leaf, ShieldCheck, Download } from '../components/icons.jsx';
+import { exportAsPdf, exportAsPng } from '../lib/exportPdf.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCurrency } from '../context/CurrencyContext.jsx';
 import { compareCities, searchCities } from '../api/cities.js';
@@ -279,12 +280,43 @@ export default function ComparePage() {
   const [error, setError]           = useState('');
   const [showSave, setShowSave]     = useState(false);
   const [view, setView]             = useState('charts');
+  const [exporting, setExporting]   = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const [weights, setWeights]       = useState(() => {
     const saved = localStorage.getItem('metroscope_weights');
     return saved ? JSON.parse(saved) : { affordability: 0.25, safety: 0.20, 'quality of life': 0.20, healthcare: 0.20, environment: 0.15 };
   });
 
   const cityDataIdsRef = useRef('');
+  const exportRef = useRef(null);
+  const exportDropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!showExport) return;
+    const handleClick = (e) => {
+      if (exportDropdownRef.current && !exportDropdownRef.current.contains(e.target)) setShowExport(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showExport]);
+
+  const handleExport = async (type) => {
+    if (!exportRef.current || exporting) return;
+    setExporting(true);
+    setShowExport(false);
+    const title = selected.map((c) => c.city).join(' vs ');
+    try {
+      if (type === 'pdf') {
+        await exportAsPdf(exportRef.current, { title, filename: `MetroScope - ${title}` });
+      } else {
+        await exportAsPng(exportRef.current, { filename: `MetroScope - ${title}` });
+      }
+    } catch (err) {
+      console.error('Export failed:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('metroscope_weights', JSON.stringify(weights));
@@ -488,7 +520,36 @@ export default function ComparePage() {
                 </span>
               ))}
             </p>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 export-controls">
+              <div className="relative" ref={exportDropdownRef}>
+                <motion.button
+                  onClick={() => setShowExport((v) => !v)}
+                  disabled={exporting}
+                  className="btn-ghost text-sm py-2 px-3 border border-surface-700/60 disabled:opacity-50"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <Download size={15} /> {exporting ? 'Exporting…' : 'Export'}
+                </motion.button>
+                <AnimatePresence>
+                  {showExport && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-44 rounded-xl overflow-hidden border border-surface-700/60 bg-surface-900/95 backdrop-blur-xl shadow-2xl z-50"
+                    >
+                      <button onClick={() => handleExport('pdf')} className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-800/80 transition-colors flex items-center gap-2">
+                        <Download size={14} /> Download PDF
+                      </button>
+                      <button onClick={() => handleExport('png')} className="w-full text-left px-4 py-2.5 text-sm hover:bg-surface-800/80 transition-colors flex items-center gap-2 border-t border-surface-700/40">
+                        <Download size={14} /> Download PNG
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               {user ? (
                 <motion.button
                   onClick={() => setShowSave(true)}
@@ -506,6 +567,7 @@ export default function ComparePage() {
             </div>
           </motion.div>
 
+          <div ref={exportRef}>
           {decision && <DecisionSummary cities={cityData} weights={weights} onWeightChange={updateWeight} decision={decision} />}
 
           <div className="flex items-center justify-between gap-3 mb-4">
@@ -591,6 +653,7 @@ export default function ComparePage() {
               </div>
             </>
           )}
+          </div>
         </>
       )}
 
