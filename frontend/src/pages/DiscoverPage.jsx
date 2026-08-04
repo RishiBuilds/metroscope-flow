@@ -333,13 +333,21 @@ export default function DiscoverPage() {
             <MatchCard key={match._id} match={match} rank={i} />
           ))}
 
-          <div className="flex items-center justify-center gap-3 mt-2">
-            <button onClick={handleReset} className="btn-secondary text-sm py-2 px-5">
-              ← Retake Quiz
-            </button>
-            <Link to="/compare" className="btn-primary text-sm py-2 px-5">
-              <BarChart3 size={15} /> Compare Cities
+          <div className="flex flex-col items-center gap-3 mt-2">
+            <Link
+              to={`/compare?ids=${results.map((m) => m._id).join(',')}`}
+              className="btn-primary text-sm py-2.5 px-6 w-full sm:w-auto justify-center shadow-md"
+            >
+              <BarChart3 size={15} /> Compare All {results.length} Matches
             </Link>
+            <div className="flex items-center gap-3">
+              <button onClick={handleReset} className="btn-secondary text-sm py-2 px-5">
+                ← Retake Quiz
+              </button>
+              <Link to="/compare" className="btn-ghost text-sm py-2 px-5 border border-surface-700/60">
+                <BarChart3 size={15} /> Custom Compare
+              </Link>
+            </div>
           </div>
         </motion.div>
       )}
