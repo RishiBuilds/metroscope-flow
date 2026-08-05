@@ -382,7 +382,7 @@ h1, h2, h3, h4, .font-display, .nav-brand { font-family: var(--font-display); fo
 h2, h3 { letter-spacing:-.01em; }
 
 .hero-shell picture img { object-position:50% 35% !important; transform:scale(1.05); transform-origin:center; }
-.hero-title { font-family:var(--font-display); font-size:clamp(2.75rem, 4.5vw, 5rem); font-weight:800; letter-spacing:-.02em; line-height:.95; word-spacing:0.15em; }
+.hero-title { font-family:var(--font-display); font-size:clamp(2.75rem, 4.5vw, 5rem); font-weight:800; letter-spacing:-.02em; line-height:1.12; word-spacing:0.15em; }
 .hero-title .hero-title-lead { display:block; color:#fff; }
 .hero-title > span:not(.hero-title-lead) { display:block; }
 .hero-subtitle { font-family:var(--font-display); font-size:1.15rem; font-weight:700; letter-spacing:-.01em; }
@@ -436,7 +436,7 @@ h2, h3 { letter-spacing:-.01em; }
 .scroll-progress { position:fixed; top:72px; left:0; right:0; z-index:49; height:3px; background:transparent; pointer-events:none; }.scroll-progress span { display:block; height:100%; background:var(--accent); box-shadow:0 0 12px color-mix(in srgb,var(--accent) 65%,transparent); transition:width .1s linear; }
 ::-webkit-scrollbar { width:10px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { border:3px solid var(--background); border-radius:999px; background:var(--accent); }
 @keyframes heroLine { to { width:9rem; } }
-@media (max-width:767px) { .site-nav { color:#fff; }.site-nav-menu-open { color:var(--foreground); }.hero-title { font-size:clamp(3.5rem,16vw,4.75rem); }.scroll-progress { top:72px; } }
+@media (max-width:767px) { .site-nav { color:#fff; }.site-nav-menu-open { color:var(--foreground); }.hero-title { font-size:clamp(2.25rem, 9vw, 3.5rem); }.scroll-progress { top:72px; } }
 @media (prefers-reduced-motion:reduce) { .hero-title::after { animation:none; width:9rem; }.scroll-progress span { transition:none; } }
 
 :root { --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); }
@@ -1060,15 +1060,6 @@ input[type="range"].weight-slider::-moz-range-thumb {
   line-height: 1.6;
 }
 
-.hero-accent-word {
-  background: linear-gradient(135deg, #22dc69 0%, #0bbc2c 40%, #00d844 100%) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  color: transparent !important;
-  text-shadow: none !important;
-  filter: drop-shadow(0 4px 20px rgba(6, 214, 160, 0.5));
-}
 .hero-badge {
   background: oklch(0.08 0.02 260 / 0.72);
   color: rgba(255, 255, 255, 0.92);

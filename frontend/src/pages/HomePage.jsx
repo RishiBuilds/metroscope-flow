@@ -20,7 +20,7 @@ import aerial1920Webp from '../assets/aerial_view-bg-1920w.webp';
 
 const HEADLINE_LINES = [
   { words: ['Know', 'before'], key: 'line1', accent: false },
-  { words: ['you', 'move.'],   key: 'line2', accent: true },
+  { words: ['you', 'move.'],   key: 'line2', accent: false },
 ];
 
 const HOW_STEPS = [
