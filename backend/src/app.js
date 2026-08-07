@@ -27,7 +27,6 @@ app.use(express.json());
 
 const apiRouter = express.Router();
 apiRouter.use(apiLimiter);
-apiRouter.get('/health', (_req, res) => res.json({ status: 'ok' }));
 apiRouter.use('/health', healthRoutes);
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/comparisons', comparisonRoutes);
@@ -38,7 +37,7 @@ apiRouter.use('/culture', cultureRoutes);
 apiRouter.use('/exchange-rates', exchangeRatesRoutes);
 apiRouter.use('/discover', discoverRoutes);
 
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+app.use('/health', healthRoutes);
 app.use('/api', apiRouter);
 app.use('/', apiRouter);
 

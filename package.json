@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "node dev.mjs",
-    "build": "npm run build --prefix frontend"
+    "build": "npm run build --prefix frontend",
+    "test": "npm run test --prefix backend"
   },
   "dependencies": {
     "mongoose": "^9.8.0"

@@ -2,8 +2,14 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.get('/', (_req, res) => {
-  res.json({ status: 'ok' });
-});
+export function healthCheck(_req, res) {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.floor(process.uptime()),
+  });
+}
+
+router.get('/', healthCheck);
 
 export default router;
